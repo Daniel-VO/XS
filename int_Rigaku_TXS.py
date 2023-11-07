@@ -11,7 +11,6 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import fabio,imageio,pyFAI
 from pyFAI.azimuthalIntegrator import AzimuthalIntegrator
-from  pyFAI.calibrant import Calibrant
 from pyFAI.io import DefaultAiWriter
 
 def q_to_px(q):
@@ -67,7 +66,7 @@ for f in glob.glob('*[!'+bgimgpat+'].img'):
 				x,I=ai.integrate_radial(i[0],360,dark=i[1],radial_range=i[2],radial_unit=i[3])
 				plt.xticks([-180,-90,0,90,180])
 			# ~ DefaultAiWriter('',ai).save1D(filename+'_'+plots[p]+'_'+str(i[2])+'.dat',x,I,dim1_unit=i[3])
-			plt.plot(x,I,linewidth=1,label=xlabels[abs(p-1)]+r'$:\rm{'+str(i[2])[1:-1]+'}$')
+			plt.plot(x,I/maxval,linewidth=1,label=xlabels[abs(p-1)]+r'$:\rm{'+str(i[2])[1:-1]+'}$')
 
 		if 'SAXS' in filename:
 			plt.yscale('log')
