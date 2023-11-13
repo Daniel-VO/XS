@@ -77,7 +77,6 @@ for f in glob.glob('*[!'+bgimgpat+'].img'):
 		plt.tight_layout(pad=0.1)
 		plt.savefig(filename+'_'+plots[p]+'.png',dpi=300)
 
-	####
 	plt.close('all')
 	mpl.rc('text',usetex=True)
 	mpl.rc('text.latex',preamble=r'\usepackage[helvet]{sfmath}')
