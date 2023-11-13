@@ -1,5 +1,5 @@
 """
-Created 07. November 2023 by Daniel Van Opdenbosch, Technical University of Munich
+Created 13. November 2023 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -9,7 +9,7 @@ import os
 import glob
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-import fabio,imageio,pyFAI
+import fabio,pyFAI
 from pyFAI.azimuthalIntegrator import AzimuthalIntegrator
 from pyFAI.io import DefaultAiWriter
 
@@ -32,7 +32,7 @@ maxval=np.max([fabio.open(fi).data for fi in glob.glob('*[!'+bgimgpat+'].img')])
 
 for f in glob.glob('*[!'+bgimgpat+'].img'):
 	filename=os.path.splitext(f)[0];img=fabio.open(f)
-	# ~ print(img.header)
+	# ~ print(img.header);a=b
 	detdist=take('PXD_GONIO_VALUES',-1);detsizeX,detsizeY=take('PXD_DETECTOR_SIZE',[0,1]);beamcenterX,beamcenterY,pxsizeX,pxsizeY=take('PXD_SPATIAL_DISTORTION_INFO',[0,1,2,3]);wavelength=take('SOURCE_WAVELENGTH',-1);omega,chi,phi=take('CRYSTAL_GONIO_VALUES',[0,1,2])
 	ai=AzimuthalIntegrator(dist=detdist/1e3,poni1=beamcenterY*pxsizeY/1e3,poni2=beamcenterX*pxsizeX/1e3,pixel1=pxsizeY/1e3,pixel2=pxsizeX/1e3,wavelength=wavelength/1e10,rot1=0,rot2=0,rot3=0)
 	# ~ print(ai)
@@ -57,16 +57,16 @@ for f in glob.glob('*[!'+bgimgpat+'].img'):
 		plt.close('all')
 		mpl.rc('text',usetex=True)
 		mpl.rc('text.latex',preamble=r'\usepackage[helvet]{sfmath}')
-		fig,ax1=plt.subplots(figsize=(8/2.54,6/2.54))
+		fig,ax1=plt.subplots(figsize=(7.5/2.54,5.3/2.54))
 
 		for i in plot:
 			if plots[p]=='azim':
 				x,I=ai.integrate1d(i[0],775/2,dark=i[1],azimuth_range=i[2],unit=i[3])
 			elif plots[p]=='radi':
 				x,I=ai.integrate_radial(i[0],360,dark=i[1],radial_range=i[2],radial_unit=i[3])
-				plt.xticks([-180,-90,0,90,180])
+				ax1.set_xticks([-180,-90,0,90,180])
 			# ~ DefaultAiWriter('',ai).save1D(filename+'_'+plots[p]+'_'+str(i[2])+'.dat',x,I,dim1_unit=i[3])
-			plt.plot(x,I/maxval,linewidth=1,label=xlabels[abs(p-1)]+r'$:\rm{'+str(i[2])[1:-1]+'}$')
+			ax1.plot(x,I/maxval,linewidth=1,label=xlabels[abs(p-1)]+r'$:\rm{'+str(i[2])[1:-1]+'}$')
 
 		if 'SAXS' in filename:
 			plt.yscale('log')
@@ -81,7 +81,7 @@ for f in glob.glob('*[!'+bgimgpat+'].img'):
 	plt.close('all')
 	mpl.rc('text',usetex=True)
 	mpl.rc('text.latex',preamble=r'\usepackage[helvet]{sfmath}')
-	fig,ax1=plt.subplots(figsize=(8*img.shape[1]/img.shape[0]/2.54,8/2.54))
+	fig,ax1=plt.subplots(figsize=(7.5*img.shape[1]/img.shape[0]/2.54,7.5/2.54))
 
 	for i in azimints:
 		if i[2]!=(-180,180) and i[2]!=(0,360):
@@ -90,9 +90,9 @@ for f in glob.glob('*[!'+bgimgpat+'].img'):
 		draw_annulus(i[2][0],i[2][1])
 
 	if 'SAXS' in filename:
-		plt.imshow(np.log(img.data+1),cmap='coolwarm',vmin=0,vmax=np.log(maxval))
+		ax1.imshow(np.log(img.data+1),cmap='coolwarm',vmin=0,vmax=np.log(maxval))
 	else:
-		plt.imshow(img.data,cmap='coolwarm',vmin=0,vmax=np.max(maxval))
+		ax1.imshow(img.data,cmap='coolwarm',vmin=0,vmax=np.max(maxval))
 
 	plt.axis('off');plt.tight_layout(pad=0)
 	plt.savefig(filename+'.png',dpi=300)#,bbox_inches=mpl.transforms.Bbox([[4/2.54,0],[12/2.54,8/2.54]]))

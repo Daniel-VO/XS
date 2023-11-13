@@ -1,5 +1,5 @@
 """
-Created 07. November 2023 by Daniel Van Opdenbosch, Technical University of Munich
+Created 10. November 2023 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -8,9 +8,17 @@ import os
 import glob
 import numpy as np
 import scipy
-import fabio,imageio
+import fabio
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+
+def profile(data,qlim,azilim,rbins,abins):
+	y,x=np.indices((data.shape))
+	xrel=x-data.shape[1]/2;yrel=y-data.shape[0]/2
+	q0=4*np.pi*np.sin((xrel**2+yrel**2)**0.5*np.arctan(pxsizeX/detdist)/2)/wavelength;azi0=-np.degrees(np.angle(xrel+yrel*1j))
+	args=np.where((q0>=qlim[0])&(q0<=qlim[1])&(azi0>=azilim[0])&(azi0<=azilim[1]))
+	ints,q,azi=np.histogram2d(q0[args].flatten(),azi0[args].flatten(),weights=data[args].flatten(),bins=(rbins,abins))
+	return q0,azi0,q[1:],azi[1:],ints
 
 def take(headerkey,indices):
 	return np.fromstring(img.header[headerkey],sep=' ')[indices]
@@ -28,3 +36,49 @@ for f in glob.glob('*.img'):
 
 stack=np.max(stack,axis=0)
 plt.imsave('stack.png',stack,cmap='coolwarm')
+
+integrators=[]
+integrators.append([stack,(0,2.5),(-10,10),50,20])
+integrators.append([stack,(1,1.2),(-45,45),1,90])
+
+plt.close('all')
+mpl.rc('text',usetex=True)
+mpl.rc('text.latex',preamble=r'\usepackage[helvet]{sfmath}')
+fig,ax1=plt.subplots(figsize=(7.5/2.54,7.5/2.54),subplot_kw=dict(projection='polar'))
+ylim=2.8
+q0,azi0,q,azi,ints=profile(stack,(0,ylim),(-180,180),2,2);plt.ylim([None,ylim])
+ax1.pcolormesh(np.radians(azi0),q0,stack,cmap='coolwarm');plt.grid(True)
+for i in integrators:
+	q0,azi0,q,azi,ints=profile(i[0],i[1],i[2],i[3]+1,i[4]+1)
+	ax1.contourf(np.radians(azi),q,np.ones(ints.shape),colors='k',alpha=0.1)
+ax1.set_xticks(plt.xticks()[0],[r'$'+str(np.degrees(ang))+'^\circ$' for ang in plt.xticks()[0]],fontsize=8)
+ax1.tick_params(axis='both',pad=2,labelsize=8);plt.tight_layout(pad=0.1)
+plt.savefig('intmap.png',dpi=300)
+
+# ~ for i in integrators:
+	# ~ plt.close('all')
+	# ~ mpl.rc('text',usetex=True)
+	# ~ mpl.rc('text.latex',preamble=r'\usepackage[helvet]{sfmath}')
+	# ~ fig,ax1=plt.subplots(figsize=(7.5/2.54,5.3/2.54))
+
+	# ~ if i[3]==1:
+
+
+	# ~ elif i[4]==1:
+
+	# ~ else:
+
+
+	# ~ ax1.plot(x,I/maxval,linewidth=1,label=xlabels[abs(p-1)]+r'$:\rm{'+str(i[2])[1:-1]+'}$')
+
+
+
+
+	# ~ plt.legend(frameon=False,fontsize=8)
+	# ~ plt.xlabel(xlabels[p],fontsize=10)
+	# ~ plt.ylabel(r'$I/1$',fontsize=10)
+	# ~ plt.tick_params(axis='both',pad=2,labelsize=8)
+	# ~ plt.tight_layout(pad=0.1)
+	# ~ plt.savefig(filename+'_'+plots[p]+'.png',dpi=300)
+
+# ~ fabio.dtrekimage.DtrekImage(data=stack,header=img.header).write('stack.img')
