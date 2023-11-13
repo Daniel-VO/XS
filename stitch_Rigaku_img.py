@@ -1,5 +1,5 @@
 """
-Created 10. November 2023 by Daniel Van Opdenbosch, Technical University of Munich
+Created 13. November 2023 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -34,12 +34,13 @@ for f in glob.glob('*.img'):
 	img.data=np.pad(img.data,(((fs-img.shape[0])//2,(fs-img.shape[0])//2),((fs-img.shape[1])//2,(fs-img.shape[1])//2)))
 	stack.append(img.data)
 
-stack=np.max(stack,axis=0)
+stack=np.max(stack,axis=0)/np.max(stack)
 plt.imsave('stack.png',stack,cmap='coolwarm')
 
 integrators=[]
-integrators.append([stack,(0,2.5),(-10,10),50,20])
+integrators.append([stack,(0,3),(-45,45),150,45])
 integrators.append([stack,(1,1.2),(-45,45),1,90])
+integrators.append([stack,(0.4,2.7),(-45,45),115,1])
 
 plt.close('all')
 mpl.rc('text',usetex=True)
@@ -55,30 +56,30 @@ ax1.set_xticks(plt.xticks()[0],[r'$'+str(np.degrees(ang))+'^\circ$' for ang in p
 ax1.tick_params(axis='both',pad=2,labelsize=8);plt.tight_layout(pad=0.1)
 plt.savefig('intmap.png',dpi=300)
 
-# ~ for i in integrators:
-	# ~ plt.close('all')
-	# ~ mpl.rc('text',usetex=True)
-	# ~ mpl.rc('text.latex',preamble=r'\usepackage[helvet]{sfmath}')
-	# ~ fig,ax1=plt.subplots(figsize=(7.5/2.54,5.3/2.54))
+for i in integrators:
+	plt.close('all')
+	mpl.rc('text',usetex=True)
+	mpl.rc('text.latex',preamble=r'\usepackage[helvet]{sfmath}')
+	fig,ax1=plt.subplots(figsize=(7.5/2.54,5.3/2.54))
 
-	# ~ if i[3]==1:
+	q0,azi0,q,azi,ints=profile(i[0],i[1],i[2],i[3],i[4])
 
+	qlabel=r'$q/\rm{\AA}:\rm{'+str(i[1])[1:-1]+'}$';betalabel=r'$\beta/^\circ:\rm{'+str(i[2])[1:-1]+'}$'
 
-	# ~ elif i[4]==1:
+	if i[3]==1:
+		ax1.plot(azi,ints.flatten(),linewidth=1,label=qlabel)
+		ax1.set_xlabel(r'$\beta/^\circ$',fontsize=10);ax1.set_ylabel(r'$I/1$',fontsize=10)
+	elif i[4]==1:
+		ax1.plot(q,ints.flatten(),linewidth=1,label=betalabel)
+		ax1.set_xlabel(r'$q/\rm{\AA}$',fontsize=10);ax1.set_ylabel(r'$I/1$',fontsize=10)
+	else:
+		ax1.contourf(azi,q,ints,cmap='coolwarm')
+		ax1.set_xlabel(r'$\beta/^\circ$',fontsize=10);ax1.set_ylabel(r'$q/\rm{\AA}$',fontsize=10)
 
-	# ~ else:
+	plt.legend(frameon=False,fontsize=8)
 
-
-	# ~ ax1.plot(x,I/maxval,linewidth=1,label=xlabels[abs(p-1)]+r'$:\rm{'+str(i[2])[1:-1]+'}$')
-
-
-
-
-	# ~ plt.legend(frameon=False,fontsize=8)
-	# ~ plt.xlabel(xlabels[p],fontsize=10)
-	# ~ plt.ylabel(r'$I/1$',fontsize=10)
-	# ~ plt.tick_params(axis='both',pad=2,labelsize=8)
-	# ~ plt.tight_layout(pad=0.1)
-	# ~ plt.savefig(filename+'_'+plots[p]+'.png',dpi=300)
+	plt.tick_params(axis='both',pad=2,labelsize=8)
+	plt.tight_layout(pad=0.1)
+	plt.savefig(str(i[1:])+'.png',dpi=300)
 
 # ~ fabio.dtrekimage.DtrekImage(data=stack,header=img.header).write('stack.img')
