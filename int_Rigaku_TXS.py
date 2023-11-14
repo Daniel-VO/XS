@@ -1,5 +1,5 @@
 """
-Created 13. November 2023 by Daniel Van Opdenbosch, Technical University of Munich
+Created 14. November 2023 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -17,11 +17,11 @@ def q_to_px(q):
 	return np.tan(2*np.arcsin(q*wavelength/(4*np.pi)))*detdist/pxsizeX
 
 def draw_azimuth(azim0,azim1):
-	ax1.add_patch(mpl.patches.Wedge([beamcenterX,beamcenterY],max(img.shape)*2**0.5,-azim1,-azim0,color='k',alpha=0.1))
+	plt.gca().add_patch(mpl.patches.Wedge([beamcenterX,beamcenterY],max(img.shape)*2**0.5,-azim1,-azim0,color='k',alpha=0.1))
 	plt.text(beamcenterX+img.shape[0]/3*np.cos(np.radians((azim1+azim0)/2)),beamcenterY-img.shape[0]/3*np.sin(np.radians((azim1+azim0)/2)),r'$\beta/^\circ:\rm{'+str(i[2])[1:-1]+'}$',ha='center',color='w',fontsize=8)
 
 def draw_annulus(q0,q1):
-	ax1.add_patch(mpl.patches.Annulus([beamcenterX,beamcenterY],q_to_px(q1),width=q_to_px(q1)-q_to_px(q0),color='k',alpha=0.1))
+	plt.gca().add_patch(mpl.patches.Annulus([beamcenterX,beamcenterY],q_to_px(q1),width=q_to_px(q1)-q_to_px(q0),color='k',alpha=0.1))
 	plt.text(beamcenterX+q_to_px((q1+q0)/2)*img.shape[1]/img.shape[0]/2,beamcenterY-q_to_px((q1+q0)/2)*img.shape[0]/img.shape[1]/2**0.5,r'$q/\rm{\AA}:\rm{'+str(i[2])[1:-1]+'}$',ha='center',color='w',fontsize=8)
 
 def take(headerkey,indices):
@@ -57,30 +57,30 @@ for f in glob.glob('*[!'+bgimgpat+'].img'):
 		plt.close('all')
 		mpl.rc('text',usetex=True)
 		mpl.rc('text.latex',preamble=r'\usepackage[helvet]{sfmath}')
-		fig,ax1=plt.subplots(figsize=(7.5/2.54,5.3/2.54))
+		plt.subplots(figsize=(7.5/2.54,5.3/2.54))
 
 		for i in plot:
 			if plots[p]=='azim':
 				x,I=ai.integrate1d(i[0],775/2,dark=i[1],azimuth_range=i[2],unit=i[3])
 			elif plots[p]=='radi':
 				x,I=ai.integrate_radial(i[0],360,dark=i[1],radial_range=i[2],radial_unit=i[3])
-				ax1.set_xticks([-180,-90,0,90,180])
+				plt.xticks([-180,-90,0,90,180])
 			# ~ DefaultAiWriter('',ai).save1D(filename+'_'+plots[p]+'_'+str(i[2])+'.dat',x,I,dim1_unit=i[3])
-			ax1.plot(x,I/maxval,linewidth=1,label=xlabels[abs(p-1)]+r'$:\rm{'+str(i[2])[1:-1]+'}$')
+			plt.plot(x,I/maxval,linewidth=1,label=xlabels[abs(p-1)]+r'$:\rm{'+str(i[2])[1:-1]+'}$')
 
 		if 'SAXS' in filename:
 			plt.yscale('log')
 		plt.legend(frameon=False,fontsize=8)
-		ax1.set_xlabel(xlabels[p],fontsize=10)
-		ax1.set_ylabel(r'$I/1$',fontsize=10)
-		ax1.tick_params(axis='both',pad=2,labelsize=8)
+		plt.xlabel(xlabels[p],fontsize=10)
+		plt.ylabel(r'$I/1$',fontsize=10)
+		plt.tick_params(axis='both',pad=2,labelsize=8)
 		plt.tight_layout(pad=0.1)
 		plt.savefig(filename+'_'+plots[p]+'.png',dpi=300)
 
 	plt.close('all')
 	mpl.rc('text',usetex=True)
 	mpl.rc('text.latex',preamble=r'\usepackage[helvet]{sfmath}')
-	fig,ax1=plt.subplots(figsize=(7.5*img.shape[1]/img.shape[0]/2.54,7.5/2.54))
+	plt.subplots(figsize=(7.5*img.shape[1]/img.shape[0]/2.54,7.5/2.54))
 
 	for i in azimints:
 		if i[2]!=(-180,180) and i[2]!=(0,360):
@@ -89,9 +89,9 @@ for f in glob.glob('*[!'+bgimgpat+'].img'):
 		draw_annulus(i[2][0],i[2][1])
 
 	if 'SAXS' in filename:
-		ax1.imshow(np.log(img.data+1),cmap='coolwarm',vmin=0,vmax=np.log(maxval))
+		plt.imshow(np.log(img.data+1),cmap='coolwarm',vmin=0,vmax=np.log(maxval))
 	else:
-		ax1.imshow(img.data,cmap='coolwarm',vmin=0,vmax=np.max(maxval))
+		plt.imshow(img.data,cmap='coolwarm',vmin=0,vmax=np.max(maxval))
 
 	plt.axis('off');plt.tight_layout(pad=0)
 	plt.savefig(filename+'.png',dpi=300)#,bbox_inches=mpl.transforms.Bbox([[4/2.54,0],[12/2.54,8/2.54]]))

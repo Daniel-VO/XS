@@ -1,5 +1,5 @@
 """
-Created 10. November 2023 by Daniel Van Opdenbosch, Technical University of Munich
+Created 14. November 2023 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -46,20 +46,20 @@ for i in integrators:
 	plt.close('all')
 	mpl.rc('text',usetex=True)
 	mpl.rc('text.latex',preamble=r'\usepackage[helvet]{sfmath}')
-	fig,ax1=plt.subplots(figsize=(7.5/2.54,5.3/2.54))
+	plt.subplots(figsize=(7.5/2.54,5.3/2.54))
 
 	q0,azi0,q,azi,ints=profile(i[0],i[1],i[2],i[3],i[4])
 	qlabel=r'$q/\rm{\AA}:\rm{'+str(i[1])[1:-1]+'}$';betalabel=r'$\beta/^\circ:\rm{'+str(i[2])[1:-1]+'}$'
 
 	if i[3]==1:
-		ax1.plot(azi,ints.flatten(),linewidth=1,label=qlabel)
-		ax1.set_xlabel(r'$\beta/^\circ$',fontsize=10);ax1.set_ylabel(r'$I/1$',fontsize=10)
+		plt.plot(azi,ints.flatten(),linewidth=1,label=qlabel)
+		plt.xlabel(r'$\beta/^\circ$',fontsize=10);plt.ylabel(r'$I/1$',fontsize=10)
 	elif i[4]==1:
-		ax1.plot(q,ints.flatten(),linewidth=1,label=betalabel)
-		ax1.set_xlabel(r'$q/\rm{\AA}$',fontsize=10);ax1.set_ylabel(r'$I/1$',fontsize=10)
+		plt.plot(q,ints.flatten(),linewidth=1,label=betalabel)
+		plt.xlabel(r'$q/\rm{\AA}$',fontsize=10);plt.ylabel(r'$I/1$',fontsize=10)
 	else:
-		ax1.contourf(azi,q,ints,cmap='coolwarm')
-		ax1.set_xlabel(r'$\beta/^\circ$',fontsize=10);ax1.set_ylabel(r'$q/\rm{\AA}$',fontsize=10)
+		plt.contourf(azi,q,ints,cmap='coolwarm')
+		plt.xlabel(r'$\beta/^\circ$',fontsize=10);plt.ylabel(r'$q/\rm{\AA}$',fontsize=10)
 
 	plt.legend(frameon=False,fontsize=8)
 
@@ -70,15 +70,15 @@ for i in integrators:
 plt.close('all')
 mpl.rc('text',usetex=True)
 mpl.rc('text.latex',preamble=r'\usepackage[helvet]{sfmath}')
-fig,ax1=plt.subplots(figsize=(7.5/2.54,7.5/2.54),subplot_kw=dict(projection='polar'))
+plt.subplot(projection='polar')
 ylim=2.8
 q0,azi0,q,azi,ints=profile(stack,(0,ylim),(-180,180),2,2);plt.ylim([None,ylim])
-ax1.pcolormesh(np.radians(azi0),q0,stack,cmap='coolwarm');plt.grid(True)
+plt.pcolormesh(np.radians(azi0),q0,stack,cmap='coolwarm');plt.grid(True)
 for i in integrators:
 	q0,azi0,q,azi,ints=profile(i[0],i[1],i[2],i[3]+1,i[4]+1)
-	ax1.contourf(np.radians(azi),q,np.ones(ints.shape),colors='k',alpha=0.1)
-ax1.set_xticks(plt.xticks()[0],[r'$'+str(np.degrees(ang))+'^\circ$' for ang in plt.xticks()[0]],fontsize=8)
-ax1.tick_params(axis='both',pad=2,labelsize=8);plt.tight_layout(pad=0.1)
+	plt.contourf(np.radians(azi),q,np.ones(ints.shape),colors='k',alpha=0.1)
+plt.xticks(plt.xticks()[0],[r'$'+str(np.degrees(ang))+'^\circ$' for ang in plt.xticks()[0]],fontsize=8)
+plt.tick_params(axis='both',pad=2,labelsize=8);plt.tight_layout(pad=0.1)
 plt.savefig('intmap.png',dpi=300)
 
 # ~ fabio.dtrekimage.DtrekImage(data=stack,header=img.header).write('stack.img')
