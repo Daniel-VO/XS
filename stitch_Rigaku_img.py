@@ -27,20 +27,26 @@ stack=[]
 for f in glob.glob('*.img'):
 	img=fabio.open(f)
 	detdist=take('PXD_GONIO_VALUES',-1);detsizeX,detsizeY=take('PXD_DETECTOR_SIZE',[0,1]);beamcenterX,beamcenterY,pxsizeX,pxsizeY=take('PXD_SPATIAL_DISTORTION_INFO',[0,1,2,3]);wavelength=take('SOURCE_WAVELENGTH',-1);omega,chi,phi=take('CRYSTAL_GONIO_VALUES',[0,1,2])
+####
 	ttmin,ttmax=take('SCAN_DET_ROTATION',[0,1])
 	img.data=np.pad(img.data,((0,0),(int(img.shape[1]+2*ttmin*img.shape[1]/(ttmax-ttmin)),0)))
+	fs=(img.shape[0]**2+img.shape[1]**2)**0.5
 	img.data=scipy.ndimage.rotate(img.data,-90-chi)
-	fs=2300
-	img.data=np.pad(img.data,(((fs-img.shape[0])//2,(fs-img.shape[0])//2),((fs-img.shape[1])//2,(fs-img.shape[1])//2)))
+	img.data=img.data[:img.shape[0]//2*2,:img.shape[1]//2*2]
+	padx=int((fs-img.shape[0])/2);pady=int((fs-img.shape[1])/2)
+	img.data=np.pad(img.data,((padx,padx),(pady,pady)))
 	stack.append(img.data)
-
 stack=np.max(stack,axis=0)/np.max(stack)
 plt.imsave('stack.png',stack,cmap='coolwarm')
+np.save('stack.npy',stack)
+####
+
+stack=np.load('stack.npy')
 
 integrators=[]
 integrators.append([stack,(0,3),(-45,45),150,45])
 integrators.append([stack,(1,1.2),(-45,45),1,90])
-integrators.append([stack,(0.4,2.7),(-45,45),115,1])
+integrators.append([stack,(0.4,2.7),(-30,30),115,1])
 
 for i in integrators:
 	plt.close('all')
@@ -75,9 +81,10 @@ ylim=2.8
 q0,azi0,q,azi,ints=profile(stack,(0,ylim),(-180,180),2,2);plt.ylim([None,ylim])
 plt.pcolormesh(np.radians(azi0),q0,stack,cmap='coolwarm');plt.grid(True)
 for i in integrators:
-	q0,azi0,q,azi,ints=profile(i[0],i[1],i[2],i[3]+1,i[4]+1)
+	q0,azi0,q,azi,ints=profile(i[0],i[1],i[2],i[3]+100,i[4]+100)
 	plt.contourf(np.radians(azi),q,np.ones(ints.shape),colors='k',alpha=0.1)
 plt.xticks(plt.xticks()[0],[r'$'+str(np.degrees(ang))+'^\circ$' for ang in plt.xticks()[0]],fontsize=8)
+plt.gca().set_rlabel_position(-90)
 plt.tick_params(axis='both',pad=2,labelsize=8);plt.tight_layout(pad=0.1)
 plt.savefig('intmap.png',dpi=300)
 
