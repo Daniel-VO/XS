@@ -1,5 +1,5 @@
 """
-Created 14. November 2023 by Daniel Van Opdenbosch, Technical University of Munich
+Created 21. November 2023 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -32,9 +32,9 @@ maxval=np.max([fabio.open(fi).data for fi in glob.glob('*[!'+bgimgpat+'].img')])
 
 for f in glob.glob('*[!'+bgimgpat+'].img'):
 	filename=os.path.splitext(f)[0];img=fabio.open(f)
-	# ~ print(img.header);a=b
-	detdist=take('PXD_GONIO_VALUES',-1);detsizeX,detsizeY=take('PXD_DETECTOR_SIZE',[0,1]);beamcenterX,beamcenterY,pxsizeX,pxsizeY=take('PXD_SPATIAL_DISTORTION_INFO',[0,1,2,3]);wavelength=take('SOURCE_WAVELENGTH',-1);omega,chi,phi=take('CRYSTAL_GONIO_VALUES',[0,1,2])
-	ai=AzimuthalIntegrator(dist=detdist/1e3,poni1=beamcenterY*pxsizeY/1e3,poni2=beamcenterX*pxsizeX/1e3,pixel1=pxsizeY/1e3,pixel2=pxsizeX/1e3,wavelength=wavelength/1e10,rot1=0,rot2=0,rot3=0)
+	# ~ print(img.header,file=open('header','w'));a=b
+	twotheta,detdist=take('PXD_GONIO_VALUES',[1,-1]);detsizeX,detsizeY=take('PXD_DETECTOR_SIZE',[0,1]);beamcenterX,beamcenterY,pxsizeX,pxsizeY=take('PXD_SPATIAL_DISTORTION_INFO',[0,1,2,3]);wavelength=take('SOURCE_WAVELENGTH',-1);omega,chi,phi=take('CRYSTAL_GONIO_VALUES',[0,1,2])
+	ai=AzimuthalIntegrator(dist=detdist/1e3,poni1=beamcenterY*pxsizeY/1e3,poni2=beamcenterX*pxsizeX/1e3,pixel1=pxsizeY/1e3,pixel2=pxsizeX/1e3,wavelength=wavelength/1e10,rot1=0,rot2=np.radians(twotheta),rot3=0)
 	# ~ print(ai)
 
 	if len(glob.glob('*'+bgimgpat+'.img'))>0:

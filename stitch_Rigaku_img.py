@@ -1,16 +1,16 @@
 """
-Created 14. November 2023 by Daniel Van Opdenbosch, Technical University of Munich
+Created 21. November 2023 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
 
+import numpy as np
 import os
 import glob
-import numpy as np
-import scipy
-import fabio
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+import scipy
+import fabio
 
 def profile(data,qlim,azilim,rbins,abins):
 	y,x=np.indices((data.shape))
@@ -26,6 +26,7 @@ def take(headerkey,indices):
 stack=[]
 for f in glob.glob('*.img'):
 	img=fabio.open(f)
+	# ~ print(img.header,file=open('header','w'));a=b
 	detdist=take('PXD_GONIO_VALUES',-1);detsizeX,detsizeY=take('PXD_DETECTOR_SIZE',[0,1]);beamcenterX,beamcenterY,pxsizeX,pxsizeY=take('PXD_SPATIAL_DISTORTION_INFO',[0,1,2,3]);wavelength=take('SOURCE_WAVELENGTH',-1);omega,chi,phi=take('CRYSTAL_GONIO_VALUES',[0,1,2])
 ####
 	ttmin,ttmax=take('SCAN_DET_ROTATION',[0,1])
