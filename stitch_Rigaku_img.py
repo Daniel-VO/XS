@@ -1,5 +1,5 @@
 """
-Created 21. November 2023 by Daniel Van Opdenbosch, Technical University of Munich
+Created 22. November 2023 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -53,7 +53,7 @@ for i in integrators:
 	plt.close('all')
 	mpl.rc('text',usetex=True)
 	mpl.rc('text.latex',preamble=r'\usepackage[helvet]{sfmath}')
-	plt.subplots(figsize=(7.5/2.54,5.3/2.54))
+	plt.figure(figsize=(7.5/2.54,5.3/2.54))
 
 	q0,azi0,q,azi,ints=profile(i[0],i[1],i[2],i[3],i[4])
 	qlabel=r'$q/\rm{\AA}:\rm{'+str(i[1])[1:-1]+'}$';betalabel=r'$\beta/^\circ:\rm{'+str(i[2])[1:-1]+'}$'
