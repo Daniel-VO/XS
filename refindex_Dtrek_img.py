@@ -1,5 +1,5 @@
 """
-Created 21. November 2023 by Daniel Van Opdenbosch, Technical University of Munich
+Created 22. November 2023 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -15,8 +15,34 @@ reflections=[]
 
 filename,q,qx,qy,qz,yobs,sig=[np.load('reflections.npy')[:,i] for i in np.arange(7)]
 
+q=np.array([float(i) for i in q])
+qx=np.array([float(i) for i in qx])
+qy=np.array([float(i) for i in qy])
+qz=np.array([float(i) for i in qz])
+yobs=np.array([float(i) for i in yobs])
+sig=np.array([float(i) for i in sig])
 
-print(filename,q,qx,qy,qz,yobs,sig)
+args=np.where(yobs*q**2>1e5)
 
+# ~ plt.errorbar(q,yobs*q**2,marker='s',markersize=2,elinewidth=1,capthick=1,capsize=3,linewidth=0)
+# ~ plt.errorbar(q[args],yobs[args]*q[args]**2,xerr=sig[args],marker='s',markersize=2,elinewidth=1,capthick=1,capsize=3,linewidth=0)
+# ~ plt.show()
 
-# ~ lattice=crystals.index_dirax(reflections)
+filename,qx,qy,qz,yobs=filename[args],qx[args],qy[args],qz[args],yobs[args]
+
+plt.close('all')
+ax=plt.figure().add_subplot(projection='3d')
+ax.scatter(qx,qy,qz,edgecolors='k',c=np.log(yobs),cmap='coolwarm')
+ax.set_xlabel('$X$');ax.set_ylabel('$Y$');ax.set_zlabel('$Z$')
+ax.set_zlim([0,None])
+plt.draw()
+
+lattice=crystals.index_dirax(np.array([qx,qy,qz]).transpose(),initial=crystals.Crystal.from_cif('Si.cif'), length_bounds=(1.95,4))
+
+for l,valuehkl in enumerate(lattice[1]):
+	ax.text(qx[l],qy[l],qz[l],str([hkl.round(1) for hkl in valuehkl])+' ',ha='right')
+	ax.text(qx[l],qy[l],qz[l],str(' '+filename[l]))
+
+print(lattice,file=open('lattice.txt','w'))
+
+plt.show()
