@@ -11,8 +11,6 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import crystals
 
-reflections=[]
-
 filename,q,qx,qy,qz,yobs,sig=[np.load('reflections.npy')[:,i] for i in np.arange(7)]
 
 q=np.array([float(i) for i in q])
@@ -37,7 +35,7 @@ ax.set_xlabel('$X$');ax.set_ylabel('$Y$');ax.set_zlabel('$Z$')
 ax.set_zlim([0,None])
 plt.draw()
 
-lattice=crystals.index_dirax(np.array([qx,qy,qz]).transpose(),initial=crystals.Crystal.from_cif('Si.cif'), length_bounds=(1.95,4))
+lattice=crystals.index_dirax(np.array([qx,qy,qz]).transpose(),initial=crystals.Crystal.from_cif('Si.cif'),length_bounds=(1.95,4))
 
 for l,valuehkl in enumerate(lattice[1]):
 	ax.text(qx[l],qy[l],qz[l],str([hkl.round(1) for hkl in valuehkl])+' ',ha='right')
