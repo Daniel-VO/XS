@@ -1,5 +1,5 @@
 """
-Created 22. November 2023 by Daniel Van Opdenbosch, Technical University of Munich
+Created 23. November 2023 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -10,6 +10,7 @@ import glob
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import crystals
+from crystals import Atom,Crystal
 
 filename,q,qx,qy,qz,yobs,sig=[np.load('reflections.npy')[:,i] for i in np.arange(7)]
 
@@ -35,7 +36,11 @@ ax.set_xlabel('$X$');ax.set_ylabel('$Y$');ax.set_zlabel('$Z$')
 ax.set_zlim([0,None])
 plt.draw()
 
-lattice=crystals.index_dirax(np.array([qx,qy,qz]).transpose(),initial=crystals.Crystal.from_cif('Si.cif'),length_bounds=(1.95,4))
+# ~ unitcell=[Atom('Si',coords = [0,0,0])];lattice_vectors=5.43070*np.eye(3)
+# ~ Crystal(unitcell,lattice_vectors)
+# ~ Crystal.from_cif('Si.cif')
+# ~ Crystal.from_database('Si')
+lattice=crystals.index_dirax(np.array([qx,qy,qz]).transpose(),initial=None,length_bounds=(1.95,4))
 
 for l,valuehkl in enumerate(lattice[1]):
 	ax.text(qx[l],qy[l],qz[l],str([hkl.round(1) for hkl in valuehkl])+' ',ha='right')
@@ -44,3 +49,4 @@ for l,valuehkl in enumerate(lattice[1]):
 print(lattice,file=open('lattice.txt','w'))
 
 plt.show()
+
