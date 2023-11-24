@@ -46,6 +46,13 @@ lattice=crystals.index_dirax(np.array([qx,qy,qz]).transpose(),initial=Crystal.fr
 	# ~ ax.text(qx[l],qy[l],qz[l],str([hkl.round(1) for hkl in valuehkl])+' ',ha='right')
 	# ~ ax.text(qx[l],qy[l],qz[l],str(' '+filename[l]))
 
+X=np.linspace(-max(abs(q)),max(abs(q)));Y=np.linspace(-max(abs(q)),max(abs(q)))
+X,Y=np.meshgrid(X,Y)
+for r in lattice[0].scattering_vector([[1,1,1],[2,2,0],[3,1,1]]):
+	print(np.linalg.norm(r))
+	Z=(np.linalg.norm(r)**2-X**2-Y**2)**0.5
+	ax.plot_surface(X,Y,Z,color='k',alpha=0.2)
+
 print(lattice,file=open('lattice.txt','w'))
 
 plt.show()
