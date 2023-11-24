@@ -1,5 +1,5 @@
 """
-Created 23. November 2023 by Daniel Van Opdenbosch, Technical University of Munich
+Created 24. November 2023 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -38,16 +38,16 @@ for f in glob.glob('*.img'):
 		plt.tight_layout(pad=0.1)
 		plt.savefig(filename+'.jpg')
 
-		twotheta0,chi0,phi0=np.radians([twotheta,chi,phi])
+		twotheta0,omega0,chi0,phi0=np.radians([twotheta,omega,chi,phi])
 		for p in peaks:
 			yobs,sig,pos0,pos1=list(p)[1:]
 			sig=np.arctan(sig*pxsizeY/detdist)
 			dangY=np.arctan((pos0-beamcenterY)*pxsizeY/detdist);dangX=np.arctan((pos1-beamcenterX)*pxsizeX/detdist)
 
 			twotheta=np.arctan((np.tan(twotheta0+dangY)**2+np.tan(dangX)**2)**0.5)
-			omega=(twotheta-twotheta0)/2
-			chi=chi0+np.arctan((pos1)*pxsizeX/detdist)/2
-			phi=phi0
+			omega=(twotheta-2*omega0)/2
+			chi=chi0+dangX/2*np.sin(twotheta/2)
+			phi=phi0+dangX/2*np.cos(twotheta/2)
 
 			q=4*np.pi*np.sin(twotheta/2)/wavelength
 			qx=q*((np.sin(chi)*np.sin(phi))**2+(np.sin(omega)*np.cos(phi))**2)**0.5\
@@ -55,6 +55,8 @@ for f in glob.glob('*.img'):
 			qy=q*((np.sin(chi)*np.cos(phi))**2+(np.sin(omega)*np.sin(phi))**2)**0.5\
 				*np.sign(np.sin(chi)*np.cos(phi)+np.sin(omega)*np.sin(phi))
 			qz=q*np.cos(chi)*np.cos(omega)
+
+			# ~ print(q,np.linalg.norm([qx,qy,qz]),1-q/np.linalg.norm([qx,qy,qz]))
 
 			reflections.append([filename,q,qx,qy,qz,yobs,sig])
 

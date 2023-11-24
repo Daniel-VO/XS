@@ -1,5 +1,5 @@
 """
-Created 23. November 2023 by Daniel Van Opdenbosch, Technical University of Munich
+Created 24. November 2023 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -40,11 +40,11 @@ plt.draw()
 # ~ Crystal(unitcell,lattice_vectors)
 # ~ Crystal.from_cif('Si.cif')
 # ~ Crystal.from_database('Si')
-lattice=crystals.index_dirax(np.array([qx,qy,qz]).transpose(),initial=None,length_bounds=(1.95,4))
+lattice=crystals.index_dirax(np.array([qx,qy,qz]).transpose(),initial=Crystal.from_database('Si'),length_bounds=(1.95,4))
 
-for l,valuehkl in enumerate(lattice[1]):
-	ax.text(qx[l],qy[l],qz[l],str([hkl.round(1) for hkl in valuehkl])+' ',ha='right')
-	ax.text(qx[l],qy[l],qz[l],str(' '+filename[l]))
+# ~ for l,valuehkl in enumerate(lattice[1]):
+	# ~ ax.text(qx[l],qy[l],qz[l],str([hkl.round(1) for hkl in valuehkl])+' ',ha='right')
+	# ~ ax.text(qx[l],qy[l],qz[l],str(' '+filename[l]))
 
 print(lattice,file=open('lattice.txt','w'))
 
