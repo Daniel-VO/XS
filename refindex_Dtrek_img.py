@@ -21,7 +21,7 @@ qz=np.array([float(i) for i in qz])
 yobs=np.array([float(i) for i in yobs])
 sig=np.array([float(i) for i in sig])
 
-args=np.where(yobs*q**2>1e5)
+args=np.where(yobs*q**2>1e6)
 
 # ~ plt.errorbar(q,yobs*q**2,marker='s',markersize=2,elinewidth=1,capthick=1,capsize=3,linewidth=0)
 # ~ plt.errorbar(q[args],yobs[args]*q[args]**2,xerr=sig[args],marker='s',markersize=2,elinewidth=1,capthick=1,capsize=3,linewidth=0)
