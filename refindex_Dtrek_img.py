@@ -25,7 +25,7 @@ for c,coord in enumerate(qcoords0):
 		similar=np.where([scipy.spatial.distance.cosine(coord,qc)<1e-3 for qc in qcoords0])
 		checkstring+=str(filename[similar])
 		q=np.append(q,np.average(q0[similar]))
-		qcoords=np.append(qcoords,np.average(qcoords0[similar],axis=0))
+		qcoords=np.append(qcoords,np.average(qcoords0[similar],axis=0,weights=yobs[similar]))
 		yobs=np.append(yobs,np.max(yobs0[similar]))
 		sig=np.append(sig,np.min(sig0[similar]))
 qcoords=qcoords.reshape(-1,3)
