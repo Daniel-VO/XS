@@ -26,4 +26,4 @@ def collect(f):
 chi,phi,twotheta,yobs=np.concatenate(ray.get([collect.remote(f) for f in glob.glob('*.ras')]),axis=1)
 np.savez_compressed('data.npz',chi=chi,phi=phi,twotheta=twotheta,yobs=yobs)
 
-os.system('python3 refsearch_2D-RSS.py')
+os.system('python3 2D-RSS_refsearch.py')

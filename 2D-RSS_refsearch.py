@@ -49,4 +49,4 @@ plt.show()
 
 np.save('reflections.npy',[q,qx,qy,qz,yobs,sigq])
 
-os.system('python3 refindex.py')
+os.system('python3 2D-RSS_refindex.py')
