@@ -22,12 +22,10 @@ qy=-q*np.sin(chi)*np.cos(phi)
 qz= q*np.cos(chi)
 
 plt.close('all')
-plt.errorbar(q,yobs*q**2,marker='.',markersize=2,elinewidth=1,capthick=1,capsize=3,linewidth=0)
+plt.errorbar(q,yobs*q**2,marker='.',markersize=1,elinewidth=1,capthick=1,capsize=2,linewidth=0)
 
-limit=np.where((yobs*q**2>max(yobs*q**2)/3))
+limit=np.where((yobs*q**2>np.max(yobs*q**2)/3))
 q0,qx0,qy0,qz0,yobs0=q[limit],qx[limit],qy[limit],qz[limit],yobs[limit]
-
-plt.errorbar(q0,yobs0*q0**2,marker='.',markersize=2,elinewidth=1,capthick=1,capsize=3,linewidth=0)
 
 coords=np.array([qx0,qy0,qz0]).transpose()
 distances=scipy.spatial.distance.cdist(coords,coords,'euclidean')
@@ -44,13 +42,16 @@ for i,valuei in enumerate(distances):
 		yobs=np.append(yobs,np.max(yobs0[similar]))
 		sigq=np.append(sigq,np.std(q0[similar]))
 
-plt.errorbar(q,yobs*q**2,xerr=sigq,marker='s',markersize=2,elinewidth=1,capthick=1,capsize=3,linewidth=0)
+		plt.errorbar(q0[similar],yobs0[similar]*q0[similar]**2,marker='.',markersize=1,elinewidth=1,capthick=1,capsize=2,linewidth=0)
+		plt.errorbar(np.average(q0[similar],weights=yobs0[similar]),np.max(yobs0[similar])*np.average(q0[similar],weights=yobs0[similar])**2,xerr=np.std(q0[similar]),marker='s',markersize=1,elinewidth=1,capthick=1,capsize=2,linewidth=0)
 plt.savefig('ints.png',dpi=300)
 
 plt.close('all')
 ax=plt.figure().add_subplot(projection='3d')
 ax.scatter(qx0,qy0,qz0,edgecolors=None,c=yobs0*q0**2,cmap='coolwarm',s=1)
 ax.scatter(qx,qy,qz,edgecolors='k',c=yobs*q**2,cmap='coolwarm')
+for v,valuev in enumerate(q):
+	ax.text(qx[v],qy[v],qz[v],str(valuev.round(2)))
 ax.set_xlabel('$X$');ax.set_ylabel('$Y$');ax.set_zlabel('$Z$')
 ax.set_zlim([0,None])
 plt.show()
