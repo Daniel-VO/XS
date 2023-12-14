@@ -43,7 +43,7 @@ for i,valuei in enumerate(distances):
 		sigq=np.append(sigq,np.std(q0[similar]))
 
 		plt.errorbar(q0[similar],yobs0[similar]*q0[similar]**2,marker='.',markersize=1,elinewidth=1,capthick=1,capsize=2,linewidth=0)
-		plt.errorbar(np.average(q0[similar],weights=yobs0[similar]),np.max(yobs0[similar])*np.average(q0[similar],weights=yobs0[similar])**2,xerr=np.std(q0[similar]),marker='s',markersize=1,elinewidth=1,capthick=1,capsize=2,linewidth=0)
+		plt.errorbar(q[-1],yobs[-1]*q[-1]**2,xerr=sigq[-1],marker='s',markersize=1,elinewidth=1,capthick=1,capsize=2,linewidth=0)
 plt.savefig('ints.png',dpi=300)
 
 plt.close('all')
