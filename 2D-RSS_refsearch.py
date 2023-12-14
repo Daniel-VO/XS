@@ -23,10 +23,10 @@ qy=-q*np.sin(chi)*np.cos(phi)
 qz= q*np.cos(chi)
 
 plt.close('all')
-plt.scatter(q,yobs,marker='.',markersize=1)
+plt.scatter(q,yobs,marker='.',s=1)
 
 limit=np.max(yobs)*np.exp(-q**2/20)
-plt.scatter(q,limit,marker='.',markersize=1)
+plt.scatter(q,limit,marker='.',s=1)
 cutoff=np.where(yobs>limit)
 q0,qx0,qy0,qz0,yobs0=q[cutoff],qx[cutoff],qy[cutoff],qz[cutoff],yobs[cutoff]
 
@@ -45,7 +45,7 @@ for i,valuei in enumerate(distances):
 		yobs=np.append(yobs,np.max(yobs0[similar]))
 		sigq=np.append(sigq,np.std(q0[similar]))
 
-		plt.scatter(q0[similar],yobs0[similar],marker='.',markersize=1)
+		plt.scatter(q0[similar],yobs0[similar],marker='.',s=1)
 		plt.errorbar(q[-1],yobs[-1],xerr=sigq[-1],marker='s',markersize=1,elinewidth=1,capthick=1,capsize=2,linewidth=0)
 plt.savefig('ints.png',dpi=300)
 
