@@ -45,7 +45,6 @@ for i,valuei in enumerate(distances):
 		sigq=np.append(sigq,np.std(q0[similar]))
 
 plt.errorbar(q,yobs*q**2,xerr=sigq,marker='s',markersize=2,elinewidth=1,capthick=1,capsize=3,linewidth=0)
-plt.yscale('log')
 plt.savefig('ints.png',dpi=300)
 
 plt.close('all')
