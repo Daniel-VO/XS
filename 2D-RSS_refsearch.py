@@ -11,11 +11,8 @@ import matplotlib.pyplot as plt
 
 data=np.load('data.npz')
 chi,phi,twotheta,yobs=data['chi'],data['phi'],data['twotheta'],data['yobs']
-
-hist,bin_edges=np.histogram(twotheta,bins=len(np.unique(twotheta)),weights=yobs)
-np.savetxt('ttints.xy',np.array([bin_edges[1:],hist]).transpose(),fmt='%.6f')
-
 chi,phi,twotheta=np.radians([chi,phi,twotheta])
+
 q=4*np.pi*np.sin(twotheta/2)/1.5406
 qx= q*np.sin(chi)*np.sin(phi)
 qy=-q*np.sin(chi)*np.cos(phi)

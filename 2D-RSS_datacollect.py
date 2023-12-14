@@ -26,4 +26,7 @@ def collect(f):
 chi,phi,twotheta,yobs=np.concatenate(ray.get([collect.remote(f) for f in glob.glob('*.ras')]),axis=1)
 np.savez_compressed('data.npz',chi=chi,phi=phi,twotheta=twotheta,yobs=yobs)
 
+hist,bin_edges=np.histogram(twotheta,bins=len(np.unique(twotheta)),weights=yobs)
+np.savetxt('ttints.xy',np.array([bin_edges[1:],hist]).transpose(),fmt='%.6f')
+
 os.system('python3 2D-RSS_refsearch.py')
