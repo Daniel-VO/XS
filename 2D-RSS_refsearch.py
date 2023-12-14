@@ -24,8 +24,9 @@ qz= q*np.cos(chi)
 
 plt.close('all')
 plt.errorbar(q,yobs,marker='.',markersize=1,elinewidth=1,capthick=1,capsize=2,linewidth=0)
+plt.scatter(q,np.max(yobs)*np.exp(-q**2/30),marker='.')
 
-limit=np.where((yobs>np.max(yobs)/3))
+limit=np.where(yobs>np.max(yobs)*np.exp(-q**2/30))
 q0,qx0,qy0,qz0,yobs0=q[limit],qx[limit],qy[limit],qz[limit],yobs[limit]
 
 coords=np.array([qx0,qy0,qz0]).transpose()
