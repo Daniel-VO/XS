@@ -23,10 +23,10 @@ qy=-q*np.sin(chi)*np.cos(phi)
 qz= q*np.cos(chi)
 
 plt.close('all')
-plt.errorbar(q,yobs,marker='.',markersize=1,elinewidth=1,capthick=1,capsize=2,linewidth=0)
-plt.scatter(q,np.max(yobs)*np.exp(-q**2/30),marker='.')
+plt.scatter(q,yobs,marker='.',markersize=1)
+plt.scatter(q,np.max(yobs)*np.exp(-q**2/20),marker='.',markersize=1)
 
-limit=np.where(yobs>np.max(yobs)*np.exp(-q**2/30))
+limit=np.where(yobs>np.max(yobs)*np.exp(-q**2/20))
 q0,qx0,qy0,qz0,yobs0=q[limit],qx[limit],qy[limit],qz[limit],yobs[limit]
 
 coords=np.array([qx0,qy0,qz0]).transpose()
@@ -44,7 +44,7 @@ for i,valuei in enumerate(distances):
 		yobs=np.append(yobs,np.max(yobs0[similar]))
 		sigq=np.append(sigq,np.std(q0[similar]))
 
-		plt.errorbar(q0[similar],yobs0[similar],marker='.',markersize=1,elinewidth=1,capthick=1,capsize=2,linewidth=0)
+		plt.scatter(q0[similar],yobs0[similar],marker='.',markersize=1)
 		plt.errorbar(q[-1],yobs[-1],xerr=sigq[-1],marker='s',markersize=1,elinewidth=1,capthick=1,capsize=2,linewidth=0)
 plt.savefig('ints.png',dpi=300)
 
