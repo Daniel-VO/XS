@@ -25,7 +25,7 @@ qz= q*np.cos(chi)
 plt.close('all')
 plt.scatter(q,yobs,marker='.',s=1)
 
-limit=np.max(yobs)*np.exp(-q**2/20)
+limit=np.max(yobs)/2*np.exp(-q**2/30)
 plt.scatter(q,limit,marker='.',s=1)
 cutoff=np.where(yobs>limit)
 q0,qx0,qy0,qz0,yobs0=q[cutoff],qx[cutoff],qy[cutoff],qz[cutoff],yobs[cutoff]
