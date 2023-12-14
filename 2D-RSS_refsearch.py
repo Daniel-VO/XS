@@ -21,8 +21,13 @@ qx= q*np.sin(chi)*np.sin(phi)
 qy=-q*np.sin(chi)*np.cos(phi)
 qz= q*np.cos(chi)
 
+plt.close('all')
+plt.errorbar(q,yobs*q**2,xerr=sigq,marker='s',markersize=2,elinewidth=1,capthick=1,capsize=3,linewidth=0)
+
 limit=np.where((yobs*q**2>1000))
 q0,qx0,qy0,qz0,yobs0=q[limit],qx[limit],qy[limit],qz[limit],yobs[limit]
+
+plt.errorbar(q0,yobs0*q0**2,xerr=sigq,marker='s',markersize=2,elinewidth=1,capthick=1,capsize=3,linewidth=0)
 
 coords=np.array([qx0,qy0,qz0]).transpose()
 distances=scipy.spatial.distance.cdist(coords,coords,'euclidean')
@@ -38,6 +43,9 @@ for i,valuei in enumerate(distances):
 		qz=np.append(qz,np.average(qz0[similar],weights=yobs0[similar]))
 		yobs=np.append(yobs,np.max(yobs0[similar]))
 		sigq=np.append(sigq,np.std(q0[similar]))
+
+plt.errorbar(q,yobs*q**2,xerr=sigq,marker='s',markersize=2,elinewidth=1,capthick=1,capsize=3,linewidth=0)
+plt.savefig('ints.png',dpi=300)
 
 plt.close('all')
 ax=plt.figure().add_subplot(projection='3d')

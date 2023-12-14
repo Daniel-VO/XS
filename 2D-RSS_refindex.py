@@ -11,10 +11,6 @@ from crystals import Atom,Crystal
 
 q,qx,qy,qz,yobs,sigq=np.load('reflections.npy')
 
-plt.close('all')
-plt.errorbar(q,yobs*q**2,xerr=sigq,marker='s',markersize=2,elinewidth=1,capthick=1,capsize=3,linewidth=0)
-plt.show()
-
 # ~ unitcell=[Atom('Si',coords = [0,0,0])];lattice_vectors=5.43070*np.eye(3)
 # ~ Crystal(unitcell,lattice_vectors)
 # ~ Crystal.from_cif('Si.cif')
