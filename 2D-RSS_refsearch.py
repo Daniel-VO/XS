@@ -24,10 +24,11 @@ qz= q*np.cos(chi)
 
 plt.close('all')
 plt.scatter(q,yobs,marker='.',markersize=1)
-plt.scatter(q,np.max(yobs)*np.exp(-q**2/20),marker='.',markersize=1)
 
-limit=np.where(yobs>np.max(yobs)*np.exp(-q**2/20))
-q0,qx0,qy0,qz0,yobs0=q[limit],qx[limit],qy[limit],qz[limit],yobs[limit]
+limit=np.max(yobs)*np.exp(-q**2/20)
+plt.scatter(q,limit,marker='.',markersize=1)
+cutoff=np.where(yobs>limit)
+q0,qx0,qy0,qz0,yobs0=q[cutoff],qx[cutoff],qy[cutoff],qz[cutoff],yobs[cutoff]
 
 coords=np.array([qx0,qy0,qz0]).transpose()
 distances=scipy.spatial.distance.cdist(coords,coords,'euclidean')
