@@ -19,7 +19,7 @@ lattice=crystals.index_dirax(np.array([qx,qy,qz]).transpose(),initial=None)
 
 plt.close('all')
 ax=plt.figure().add_subplot(projection='3d')
-ax.scatter(qx,qy,qz,edgecolors='k',c=yobs*q**2,cmap='coolwarm')
+ax.scatter(qx,qy,qz,edgecolors='k',c=yobs,cmap='coolwarm')
 ax.set_xlabel('$X$');ax.set_ylabel('$Y$');ax.set_zlabel('$Z$')
 ax.set_zlim([0,None])
 
