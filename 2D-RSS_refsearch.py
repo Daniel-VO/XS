@@ -24,7 +24,7 @@ qz= q*np.cos(chi)
 plt.close('all')
 plt.errorbar(q,yobs*q**2,marker='.',markersize=2,elinewidth=1,capthick=1,capsize=3,linewidth=0)
 
-limit=np.where((yobs*q**2>500))
+limit=np.where((yobs*q**2>max(yobs*q**2)/2))
 q0,qx0,qy0,qz0,yobs0=q[limit],qx[limit],qy[limit],qz[limit],yobs[limit]
 
 plt.errorbar(q0,yobs0*q0**2,marker='.',markersize=2,elinewidth=1,capthick=1,capsize=3,linewidth=0)
