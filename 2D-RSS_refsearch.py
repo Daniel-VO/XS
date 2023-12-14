@@ -23,7 +23,7 @@ qy=-q*np.sin(chi)*np.cos(phi)
 qz= q*np.cos(chi)
 
 plt.close('all')
-plt.scatter(q,yobs,marker='.',s=1)
+plt.scatter(q,yobs,marker='.',s=1,c='k')
 
 limit=np.max(yobs)/2*np.exp(-q**2/30)
 plt.scatter(q,limit,marker='.',s=1)
