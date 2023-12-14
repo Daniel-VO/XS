@@ -1,5 +1,5 @@
 """
-Created 07. December 2023 by Daniel Van Opdenbosch, Technical University of Munich
+Created 14. December 2023 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -32,10 +32,10 @@ for i,valuei in enumerate(distances):
 	if i not in indices:
 		similar=np.where(valuei<1)
 		indices=np.append(indices,similar)
-		q=np.append(q,np.average(q0[similar],weights=yobs0[similar]**2))
-		qx=np.append(qx,np.average(qx0[similar],weights=yobs0[similar]**2))
-		qy=np.append(qy,np.average(qy0[similar],weights=yobs0[similar]**2))
-		qz=np.append(qz,np.average(qz0[similar],weights=yobs0[similar]**2))
+		q=np.append(q,np.average(q0[similar],weights=yobs0[similar]))
+		qx=np.append(qx,np.average(qx0[similar],weights=yobs0[similar]))
+		qy=np.append(qy,np.average(qy0[similar],weights=yobs0[similar]))
+		qz=np.append(qz,np.average(qz0[similar],weights=yobs0[similar]))
 		yobs=np.append(yobs,np.max(yobs0[similar]))
 		sigq=np.append(sigq,np.std(q0[similar]))
 
