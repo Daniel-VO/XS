@@ -22,12 +22,12 @@ qy=-q*np.sin(chi)*np.cos(phi)
 qz= q*np.cos(chi)
 
 plt.close('all')
-plt.errorbar(q,yobs*q**2,marker='s',markersize=2,elinewidth=1,capthick=1,capsize=3,linewidth=0)
+plt.errorbar(q,yobs*q**2,marker='.',markersize=2,elinewidth=1,capthick=1,capsize=3,linewidth=0)
 
 limit=np.where((yobs*q**2>1000))
 q0,qx0,qy0,qz0,yobs0=q[limit],qx[limit],qy[limit],qz[limit],yobs[limit]
 
-plt.errorbar(q0,yobs0*q0**2,marker='s',markersize=2,elinewidth=1,capthick=1,capsize=3,linewidth=0)
+plt.errorbar(q0,yobs0*q0**2,marker='.',markersize=2,elinewidth=1,capthick=1,capsize=3,linewidth=0)
 
 coords=np.array([qx0,qy0,qz0]).transpose()
 distances=scipy.spatial.distance.cdist(coords,coords,'euclidean')
