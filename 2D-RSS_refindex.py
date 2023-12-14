@@ -35,4 +35,3 @@ for l,valuehkl in enumerate(lattice[1]):
 print(lattice,file=open('lattice.txt','w'))
 
 plt.show()
-
