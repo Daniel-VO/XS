@@ -1,5 +1,5 @@
 """
-Created 14. December 2023 by Daniel Van Opdenbosch, Technical University of Munich
+Created 20. December 2023 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -18,15 +18,20 @@ def collect(f):
 		if line.split()[0]=='*MEAS_COND_AXIS_POSITION-5':
 			phi=float(line.split()[1].replace('"',''))
 		if '*' not in line:
-			chi_collect.append(chi);phi_collect.append(phi)
+			chi_collect.append(chi)#;phi_collect.append(phi)
 			twotheta_collect.append(float(line.split()[0]))
 			yobs_collect.append(float(line.split()[1]))
-	return chi_collect,phi_collect,twotheta_collect,yobs_collect
+	yobs,chi,twotheta=np.histogram2d(chi_collect,twotheta_collect,weights=yobs_collect,\
+					  bins=[np.arange(min(chi_collect),max(chi_collect)),\
+							np.arange(min(twotheta_collect),max(twotheta_collect))])
+	chi,twotheta=np.meshgrid(chi[1:],twotheta[1:]);phi=np.full(yobs.shape,phi)
+	print(phi)
+	return chi.flatten(),phi.flatten(),twotheta.flatten(),yobs.flatten()
 
 chi,phi,twotheta,yobs=np.concatenate(ray.get([collect.remote(f) for f in glob.glob('*.ras')]),axis=1)
 np.savez_compressed('data.npz',chi=chi,phi=phi,twotheta=twotheta,yobs=yobs)
 
-hist,bin_edges=np.histogram(twotheta,bins=len(np.unique(twotheta)),weights=yobs)
-np.savetxt('ttints.xy',np.array([bin_edges[1:],hist]).transpose(),fmt='%.6f')
+yobs,twotheta=np.histogram(twotheta,weights=yobs,bins=np.unique(twotheta))
+np.savetxt('ttints.xy',np.array([twotheta[1:],yobs]).transpose(),fmt='%.6f')
 
 os.system('python3 2D-RSS_refsearch.py')
