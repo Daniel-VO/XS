@@ -25,7 +25,7 @@ for l,valuehkl in enumerate(lattice[1]):
 
 # ~ X=np.linspace(-max(abs(q)),max(abs(q)));Y=np.linspace(-max(abs(q)),max(abs(q)))
 # ~ X,Y=np.meshgrid(X,Y)
-# ~ for r in lattice[0].scattering_vector([[3,1,1]]):
+# ~ for r in lattice[0].scattering_vector([[1,0,0]]):
 	# ~ Z=(np.linalg.norm(r)**2-X**2-Y**2)**0.5
 	# ~ ax.plot_surface(X,Y,Z,color='k',alpha=0.2)
 
