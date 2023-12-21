@@ -12,7 +12,7 @@ from crystals import Atom,Crystal
 q,qx,qy,qz,yobs,sigq=np.load('reflections.npy')
 
 guess=crystals.lattice.Lattice.from_parameters(a=5.43070,b=5.43070,c=5.43070,alpha=90.00,beta=90.00,gamma=90.00)
-lattice=crystals.index_dirax(np.array([qx,qy,qz]).transpose(),initial=Crystal.from_database('Si'))
+lattice=crystals.index_dirax(np.array([qx,qy,qz]).transpose(),initial=None)
 
 plt.close('all')
 ax=plt.figure().add_subplot(projection='3d')
