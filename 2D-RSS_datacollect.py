@@ -29,8 +29,7 @@ def collect(f):
 	return chi.flatten(),phi.flatten(),twotheta.flatten(),yobs.flatten()
 
 chi,phi,twotheta,yobs=np.concatenate(ray.get([collect.remote(f) for f in glob.glob('*.ras')]),axis=1)
-os.system('mv data.npz data_alt.npz')
-np.savez_compressed('data.npz',chi=chi,phi=phi,twotheta=twotheta,yobs=yobs)
+np.save('data.npy',[chi,phi,twotheta,yobs])
 
 yobs,twotheta=np.histogram(twotheta,weights=yobs/np.sin(np.radians(twotheta)/2),bins=np.unique(twotheta))
 np.savetxt('ttints.xy',np.array([twotheta[1:],yobs]).transpose(),fmt='%.6f')

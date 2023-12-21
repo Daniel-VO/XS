@@ -9,8 +9,7 @@ import scipy
 import numpy as np
 import matplotlib.pyplot as plt
 
-data=np.load('data.npz')
-chi,phi,twotheta,yobs=data['chi'],data['phi'],data['twotheta'],data['yobs']
+chi,phi,twotheta,yobs=np.load('data.npy')
 chi,phi,twotheta=np.radians([chi,phi,twotheta])
 
 Pol=1+np.cos(twotheta)**2
