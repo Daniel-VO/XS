@@ -1,5 +1,5 @@
 """
-Created 08. December 2023 by Daniel Van Opdenbosch, Technical University of Munich
+Created 17. Januar 2023 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -22,7 +22,7 @@ def draw_azimuth(azim0,azim1):
 
 def draw_annulus(q0,q1):
 	plt.gca().add_patch(mpl.patches.Annulus([beamcenterX,beamcenterY],q_to_px(q1),width=q_to_px(q1)-q_to_px(q0),color='k',alpha=0.1))
-	plt.text(beamcenterX+q_to_px((q1+q0)/2)*img.shape[1]/img.shape[0]/2,beamcenterY-q_to_px((q1+q0)/2)*img.shape[0]/img.shape[1]/2**0.5,r'$q/\rm{\AA}:\rm{'+str(i[2])[1:-1]+'}$',ha='center',color='w',fontsize=8)
+	plt.text(beamcenterX+q_to_px((q1+q0)/2)*img.shape[1]/img.shape[0]/2,beamcenterY-q_to_px((q1+q0)/2)*img.shape[0]/img.shape[1]/2**0.5,r'$q/\rm{\AA}^{-1}:\rm{'+str(i[2])[1:-1]+'}$',ha='center',color='w',fontsize=8)
 
 def take(headerkey,indices):
 	return np.fromstring(img.header[headerkey],sep=' ')[indices]
@@ -42,7 +42,7 @@ for f in glob.glob('*[!'+bgimgpat+'].img'):
 	else:
 		dark=None
 
-	unit='q_A^-1';azimints=[];radiints=[];plots=['azim','radi'];xlabels=[r'$q/\rm{\AA}$',r'$\beta/^\circ$'];masks=[]
+	unit='q_A^-1';azimints=[];radiints=[];plots=['azim','radi'];xlabels=[r'$q/\rm{\AA}^{-1}$',r'$\beta/^\circ$'];masks=[]
 	azimints.append((img.data,dark,(-180,180),unit))
 	azimints.append((img.data,dark,(-10,10),unit))
 	azimints.append((img.data,dark,(80,100),unit))

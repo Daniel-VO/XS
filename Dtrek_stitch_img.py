@@ -1,5 +1,5 @@
 """
-Created 08. December 2023 by Daniel Van Opdenbosch, Technical University of Munich
+Created 17. Januar 2023 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -56,17 +56,17 @@ for i in integrators:
 	plt.figure(figsize=(7.5/2.54,5.3/2.54))
 
 	q0,azi0,q,azi,ints=profile(i[0],i[1],i[2],i[3],i[4])
-	qlabel=r'$q/\rm{\AA}:\rm{'+str(i[1])[1:-1]+'}$';betalabel=r'$\beta/^\circ:\rm{'+str(i[2])[1:-1]+'}$'
+	qlabel=r'$q/\rm{\AA}^{-1}:\rm{'+str(i[1])[1:-1]+'}$';betalabel=r'$\beta/^\circ:\rm{'+str(i[2])[1:-1]+'}$'
 
 	if i[3]==1:
 		plt.plot(azi,ints.flatten(),linewidth=1,label=qlabel)
 		plt.xlabel(r'$\beta/^\circ$',fontsize=10);plt.ylabel(r'$I/1$',fontsize=10)
 	elif i[4]==1:
 		plt.plot(q,ints.flatten(),linewidth=1,label=betalabel)
-		plt.xlabel(r'$q/\rm{\AA}$',fontsize=10);plt.ylabel(r'$I/1$',fontsize=10)
+		plt.xlabel(r'$q/\rm{\AA}^{-1}$',fontsize=10);plt.ylabel(r'$I/1$',fontsize=10)
 	else:
 		plt.contourf(azi,q,ints,cmap='coolwarm')
-		plt.xlabel(r'$\beta/^\circ$',fontsize=10);plt.ylabel(r'$q/\rm{\AA}$',fontsize=10)
+		plt.xlabel(r'$\beta/^\circ$',fontsize=10);plt.ylabel(r'$q/\rm{\AA}^{-1}$',fontsize=10)
 
 	plt.legend(frameon=False,fontsize=8)
 
