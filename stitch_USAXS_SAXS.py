@@ -1,9 +1,3 @@
-"""
-Created 14. February 2023 by Daniel Van Opdenbosch, Technical University of Munich
-
-This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
-"""
-
 import os
 import glob
 import numpy as np
@@ -18,8 +12,8 @@ for f in glob.glob('*_USAXS*.dat'):
 		qS,yobsS,epsS=np.genfromtxt(f.replace('_USAXS','_SAXS'),unpack=True)
 
 		overlapU=np.where(qU>=qS[0]);overlapS=np.where(qS<=qU[-1])
-		ovU=interpolate.interp1d(qU[overlapU],yobsU[overlapU])
-		yobsS*=np.average(ovU(qS[overlapS][1:])/yobsS[overlapS][1:],weights=yobsS[overlapS][1:])
+		intU=interpolate.interp1d(qU[overlapU],yobsU[overlapU])
+		yobsS*=np.average(intU(qS[overlapS][1:])/yobsS[overlapS][1:],weights=yobsS[overlapS][1:])
 
 		plt.close('all')
 		plt.plot(qU,yobsU)
