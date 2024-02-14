@@ -19,7 +19,7 @@ for f in glob.glob('*_USAXS*.dat'):
 
 		overlapU=np.where(qU>=qS[0]);overlapS=np.where(qS<=qU[-1])
 		ovU=interpolate.interp1d(qU[overlapU],yobsU[overlapU])
-		yobsU*=np.average(yobsS[overlapS][1:]/ovU(qS[overlapS][1:]),weights=yobsS[overlapS][1:])
+		yobsS*=np.average(ovU(qS[overlapS][1:])/yobsS[overlapS][1:],weights=yobsS[overlapS][1:])
 
 		plt.close('all')
 		plt.plot(qU,yobsU)

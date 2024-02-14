@@ -41,7 +41,7 @@ for p in paths:
 				yobs-=ybg													#bgcorr
 
 			q=4*np.pi*np.sin(np.radians(tt/2))/1.5406							#toq
-			mincoord=np.argmax(yobs)
+			mincoord=int(np.where(yobs==max(yobs[np.where(q>[5e-3,5e-4][int(np.where(np.array(['*_SAXS', '*_USAXS'])==s)[0])])]))[0])
 			print('qmin = '+str(q[mincoord])+' A^-1')
 
 			plt.close('all')
