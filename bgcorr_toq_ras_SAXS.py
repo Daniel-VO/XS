@@ -58,5 +58,5 @@ for p in paths:
 			plt.xscale('log'),plt.yscale('log'),plt.xlim([1e-4,None])
 			plt.savefig(filename+'.png')
 
-			np.savetxt(filename+'_s_s_q.dat',np.transpose([q[mincoord:],yobs[mincoord:],np.ones(q[mincoord:].shape)]),fmt='%.8f')
+			np.savetxt(filename+'_s_s_q.dat',np.transpose([q[mincoord:],yobs[mincoord:],np.zeros(q[mincoord:].shape)]),fmt='%.16f')
 

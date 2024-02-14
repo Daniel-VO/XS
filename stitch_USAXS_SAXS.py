@@ -30,4 +30,4 @@ for f in glob.glob('*_USAXS*.dat'):
 		args=np.where(qU<=qS[0])
 		qU,yobsU,epsU=qU[args],yobsU[args],epsU[args]
 
-		np.savetxt(filename+'_USAXS_SAXS.dat',np.transpose([np.append(qU,qS),np.append(yobsU,yobsS),np.append(epsU,epsS)]),fmt='%.8f')
+		np.savetxt(filename+'_USAXS_SAXS.dat',np.transpose([np.append(qU,qS),np.append(yobsU,yobsS),np.append(epsU,epsS)]),fmt='%.16f')
