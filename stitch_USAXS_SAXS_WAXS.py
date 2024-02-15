@@ -10,7 +10,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import interpolate
 
-for f in glob.glob('*_SAXS*.dat'):
+for f in glob.glob('3R*_SAXS*.dat'):
 	filename=f.split('_SAXS')[0]
 	plt.close('all')
 
@@ -42,4 +42,4 @@ for f in glob.glob('*_SAXS*.dat'):
 	plt.xscale('log');plt.yscale('log')
 	plt.savefig(filename+'_stitch.png')
 
-	# ~ np.savetxt(filename+'_stitch.dat',np.transpose([np.append(qU,qS,qW),np.append(yobsU,yobsS,yobsW),np.append(epsU,epsS,epsW)]),fmt='%.16f')
+	np.savetxt(filename+'_stitch.dat',np.transpose([np.concatenate((qU,qS,qW)),np.concatenate((yobsU,yobsS,yobsW)),np.concatenate((epsU,epsS,epsW))]),fmt='%.16f')
