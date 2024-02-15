@@ -10,7 +10,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import interpolate
 
-for f in glob.glob('3R*_SAXS*.dat'):
+for f in glob.glob('*_SAXS*.dat'):
 	filename=f.split('_SAXS')[0]
 	plt.close('all')
 
