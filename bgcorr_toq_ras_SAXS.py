@@ -29,7 +29,7 @@ for p in paths:
 		for f in glob.glob('[!BG]'+p+s+'.ras'):
 			filename=os.path.splitext(f)[0]
 			print(filename)
-			tt,yobs,yerr=np.genfromtxt((i.replace('*','#') for i in open(f)),unpack=True)
+			tt,yobs,eps=np.genfromtxt((i.replace('*','#') for i in open(f)),unpack=True)
 			if min(tt)<0:
 				argsavg=np.where((tt>=min(tt))&(tt<=-min(tt)))
 				tt-=np.average(tt[argsavg],weights=yobs[argsavg]**2)			#zero drift correction
@@ -58,5 +58,5 @@ for p in paths:
 			plt.xscale('log'),plt.yscale('log'),plt.xlim([[1e-4,1e-3][int(np.where(np.array(['*_USAXS','*_SAXS'])==s)[0])],None])
 			plt.savefig(filename+'.png')
 
-			np.savetxt(filename+'_s_s_q.dat',np.transpose([q[mincoord:],yobs[mincoord:],np.zeros(q[mincoord:].shape)]),fmt='%.16f')
+			np.savetxt(filename+'_s_s_q.dat',np.transpose([q[mincoord:],yobs[mincoord:]]),fmt='%.16f')
 

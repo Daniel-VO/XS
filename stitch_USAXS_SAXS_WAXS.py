@@ -14,32 +14,35 @@ for f in glob.glob('*_SAXS*.dat'):
 	filename=f.split('_SAXS')[0]
 	plt.close('all')
 
-	qS,yobsS,epsS=np.genfromtxt(f,unpack=True)
+	qS,yobsS=np.genfromtxt(f,unpack=True)
 	plt.plot(qS,yobsS)
+	expq=qS;expyobs=yobsS
 
 	if os.path.isfile(f.replace('_SAXS','_USAXS')):
-		qU,yobsU,epsU=np.genfromtxt(f.replace('_SAXS','_USAXS'),unpack=True)
+		qU,yobsU=np.genfromtxt(f.replace('_SAXS','_USAXS'),unpack=True)
 
 		overlapU=np.where(qU>=qS[0]);overlapS=np.where(qS<=qU[-1])
 		intU=interpolate.interp1d(qU[overlapU],yobsU[overlapU])
 		yobsU*=np.average(yobsS[overlapS][1:]/intU(qS[overlapS][1:]),weights=yobsS[overlapS][1:])
 
 		args=np.where(qU<=qS[0])
-		qU,yobsU,epsU=qU[args],yobsU[args],epsU[args]
+		qU,yobsU=qU[args],yobsU[args]
 
 		plt.plot(qU,yobsU)
+		expq=np.append(expq,qU);expyobs=np.append(expyobs,yobsU)
 
 	if os.path.isfile(f.replace('_SAXS','_TXRD')):
-		qW,yobsW,epsW=np.genfromtxt(f.replace('_SAXS','_TXRD'),unpack=True)
+		qW,yobsW=np.genfromtxt(f.replace('_SAXS','_TXRD'),unpack=True)
 
 		args=np.where(qW>=qS[-1])
-		qW,yobsW,epsW=qW[args],yobsW[args],epsW[args]
+		qW,yobsW=qW[args],yobsW[args]
 
 		yobsW*=yobsS[-1]/yobsW[0]
 
 		plt.plot(qW,yobsW)
+		expq=np.append(expq,qW);expyobs=np.append(expyobs,yobsW)
 
 	plt.xscale('log');plt.yscale('log')
 	plt.savefig(filename+'_stitch.png')
 
-	np.savetxt(filename+'_stitch.dat',np.transpose([np.concatenate((qU,qS,qW)),np.concatenate((yobsU,yobsS,yobsW)),np.concatenate((epsU,epsS,epsW))]),fmt='%.16f')
+	np.savetxt(filename+'_stitch.dat',np.transpose([expq,expyobs]),fmt='%.16f')
