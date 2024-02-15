@@ -15,7 +15,7 @@ paths.append('')
 
 for p in paths:
 	os.system('rm '+p+'*.dat '+p+'*.png')
-	for s in ['*_SAXS','*_USAXS']:
+	for s in ['*_USAXS','*_SAXS']:
 		BGfiles=glob.glob(p+s+'*BG.ras')
 
 		if len(BGfiles)>1:
@@ -41,7 +41,7 @@ for p in paths:
 				yobs-=ybg													#bgcorr
 
 			q=4*np.pi*np.sin(np.radians(tt/2))/1.5406							#toq
-			mincoord=int(np.where(yobs==max(yobs[np.where(q>[5e-3,5e-4][int(np.where(np.array(['*_SAXS', '*_USAXS'])==s)[0])])]))[0])
+			mincoord=int(np.where(yobs==max(yobs[np.where(q>[5e-4,5e-3][int(np.where(np.array(['*_USAXS','*_SAXS'])==s)[0])])]))[0])
 			print('qmin = '+str(q[mincoord])+' A^-1')
 
 			plt.close('all')
@@ -55,7 +55,7 @@ for p in paths:
 			if len(BGfiles)==1:
 				plt.plot(q,yobs+ybg);plt.plot(q,ybg)
 			plt.plot(q,yobs);plt.plot(q[mincoord:],yobs[mincoord:])
-			plt.xscale('log'),plt.yscale('log'),plt.xlim([1e-4,None])
+			plt.xscale('log'),plt.yscale('log'),plt.xlim([[1e-4,1e-3][int(np.where(np.array(['*_USAXS','*_SAXS'])==s)[0])],None])
 			plt.savefig(filename+'.png')
 
 			np.savetxt(filename+'_s_s_q.dat',np.transpose([q[mincoord:],yobs[mincoord:],np.zeros(q[mincoord:].shape)]),fmt='%.16f')
