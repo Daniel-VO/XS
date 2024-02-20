@@ -37,7 +37,6 @@ for p in paths:
 				argscut=np.where((tt>=min(ttbg))&(tt<=max(ttbg)))
 				tt=tt[argscut];yobs=yobs[argscut]
 				ybg=bg(tt)
-				ybg/=max(ybg);yobs/=max(yobs)
 				yobs-=ybg													#bgcorr
 
 			q=4*np.pi*np.sin(np.radians(tt/2))/1.5406							#toq
