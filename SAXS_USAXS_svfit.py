@@ -51,29 +51,33 @@ for f in glob.glob('*_SAXS*.dat'):
 	plt.figure(figsize=(7.5/2.54,5.3/2.54))
 
 	qS,yobsS=np.genfromtxt(f,unpack=True)
+	qy_width=float(open(f).readlines()[0].split('=')[-1])
+	plt.figtext(0.95,0.95,'SAXS qy_width:\n'+str(round(qy_width,6)),fontsize=6,ha='right')
 	qS,yobsS=qS[:np.argmin(yobsS)],yobsS[:np.argmin(yobsS)]	####
-	SAXSres=Slit1D(qS,qx_width=0.136,qy_width=188e-5,q_calc=qS)
+	SAXSres=Slit1D(qS,qx_width=0.136,qy_width=qy_width,q_calc=qS)
 	SAXSkernel=model.make_kernel([qS])
 
 	if os.path.isfile(f.replace('_SAXS','_USAXS')):
 		qU,yobsU=np.genfromtxt(f.replace('_SAXS','_USAXS'),unpack=True)
-		USAXSres=Slit1D(qU,qx_width=0.136,qy_width=11e-5,q_calc=qU)
+		qy_width=float(open(f.replace('_SAXS','_USAXS')).readlines()[0].split('=')[-1])
+		plt.figtext(0.2,0.25,'USAXS qy_width:\n'+str(round(qy_width,6)),fontsize=6)
+		USAXSres=Slit1D(qU,qx_width=0.136,qy_width=qy_width,q_calc=qU)
 		USAXSkernel=model.make_kernel([qU])
 		params.add('Uscale',params.valuesdict()['scale']/10,min=0);params.add('Ubackground',0)
 
 	result=lm.minimize(fitfunc,params)
-	print(filename)
+	print(filename,sys.argv[1])
 	result.params.pretty_print()
 	prm=result.params.valuesdict()
 	res_collect+=np.sum(res)
 
 	plt.scatter(qS,yobsS,c='k',marker='.',s=2,linewidth=0)
-	plt.plot(qS[:-50],SAXSres.apply(call_kernel(SAXSkernel,prm))[:-50],'0.3',linewidth=0.5)
+	plt.plot(qS,SAXSres.apply(call_kernel(SAXSkernel,prm)),'0.3',linewidth=0.5)
 
 	if os.path.isfile(f.replace('_SAXS','_USAXS')):
 		prm['scale']=prm['Uscale'];prm['background']=prm['Ubackground']
 		plt.scatter(qU,yobsU,c='k',marker='.',s=2,linewidth=0)
-		plt.plot(qU[:-50],USAXSres.apply(call_kernel(USAXSkernel,prm))[:-50],'0.3',linewidth=0.5)
+		plt.plot(qU,USAXSres.apply(call_kernel(USAXSkernel,prm)),'0.3',linewidth=0.5)
 
 	plt.xscale('log');plt.yscale('log')
 

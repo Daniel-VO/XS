@@ -63,5 +63,7 @@ for p in paths:
 			plt.xscale('log'),plt.yscale('log'),plt.xlim([[1e-4,1e-3][int(np.where(np.array(['*_USAXS','*_SAXS'])==s)[0])],None])
 			plt.savefig(filename+'.png')
 
-			np.savetxt(filename+'_s_s_q.dat',np.transpose([q[mincoord:],yobs[mincoord:]]),fmt='%.16f')
+			with open(filename+'_s_s_q.dat','a') as f:
+				f.write('#qy_width = '+str(popt[-1])+'\n')
+				np.savetxt(f,np.transpose([q[mincoord:],yobs[mincoord:]]),fmt='%.16f')
 
