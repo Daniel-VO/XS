@@ -52,7 +52,7 @@ for f in glob.glob('*_SAXS*.dat'):
 
 	qS,yobsS=np.genfromtxt(f,unpack=True)
 	qy_width=float(open(f).readlines()[0].split('=')[-1])
-	plt.figtext(0.95,0.95,'SAXS qy_width:\n'+str(round(qy_width,6)),fontsize=6,ha='right')
+	plt.figtext(0.98,0.98,'SAXS qy_width:\n'+str(round(qy_width,6)),fontsize=6,ha='right',va='top')
 	qS,yobsS=qS[:np.argmin(yobsS)],yobsS[:np.argmin(yobsS)]	####
 	SAXSres=Slit1D(qS,qx_width=0.136,qy_width=qy_width,q_calc=qS)
 	SAXSkernel=model.make_kernel([qS])
@@ -60,7 +60,7 @@ for f in glob.glob('*_SAXS*.dat'):
 	if os.path.isfile(f.replace('_SAXS','_USAXS')):
 		qU,yobsU=np.genfromtxt(f.replace('_SAXS','_USAXS'),unpack=True)
 		qy_width=float(open(f.replace('_SAXS','_USAXS')).readlines()[0].split('=')[-1])
-		plt.figtext(0.2,0.25,'USAXS qy_width:\n'+str(round(qy_width,6)),fontsize=6)
+		plt.figtext(0.2,0.23,'USAXS qy_width:\n'+str(round(qy_width,6)),fontsize=6)
 		USAXSres=Slit1D(qU,qx_width=0.136,qy_width=qy_width,q_calc=qU)
 		USAXSkernel=model.make_kernel([qU])
 		params.add('Uscale',params.valuesdict()['scale']/10,min=0);params.add('Ubackground',0)
