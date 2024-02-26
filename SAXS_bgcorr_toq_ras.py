@@ -8,7 +8,10 @@ import os
 import glob
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy import interpolate
+from scipy import interpolate,optimize
+
+def gaussian(x,a,x0,sigma):
+	return a*np.exp(-((x-x0)/sigma)**2/2)
 
 paths=glob.glob('*/')
 paths.append('')
@@ -42,6 +45,9 @@ for p in paths:
 			q=4*np.pi*np.sin(np.radians(tt/2))/1.5406							#toq
 			mincoord=int(np.where(yobs==max(yobs[np.where(q>[5e-4,5e-3][int(np.where(np.array(['*_USAXS','*_SAXS'])==s)[0])])]))[0])
 			print('qmin = '+str(q[mincoord])+' A^-1')
+			argsgauss=np.where((q>=q[0])&(q<=-q[0]))
+			popt,pcov=optimize.curve_fit(gaussian,q[argsgauss],ybg[argsgauss],p0=[max(ybg),0,1e-4])
+			print('qy_width = '+str(popt[-1])+' A^-1')
 
 			plt.close('all')
 			if len(BGfiles)==1:
