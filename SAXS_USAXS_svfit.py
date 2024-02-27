@@ -23,7 +23,7 @@ def fitfunc(params):
 	if os.path.isfile(f.replace('_SAXS','_USAXS')):
 		prm['scale']=prm['Uscale'];prm['background']=prm['Ubackground']
 		res=np.append(yobsU-USAXSres.apply(call_kernel(USAXSkernel,prm)),res)
-	return np.nan_to_num(res)
+	return abs(np.nan_to_num(res))**0.5
 
 model=load_model(str(sys.argv[1]))
 params=lm.Parameters()
@@ -50,17 +50,17 @@ for f in glob.glob('*_SAXS*.dat'):
 	plt.figure(figsize=(7.5/2.54,5.3/2.54))
 
 	qS,yobsS=np.genfromtxt(f,unpack=True)
-	qy_width=float(open(f).readlines()[0].split('=')[-1])
-	plt.figtext(0.98,0.98,'SAXS qy_width:\n'+str(round(qy_width,6)),fontsize=6,ha='right',va='top')
+	qy_widthS=float(open(f).readlines()[0].split('=')[-1])
+	plt.figtext(0.98,0.98,'qy_widthS:\n'+str(round(qy_widthS,6)),fontsize=6,ha='right',va='top')
 	qS,yobsS=qS[:np.argmin(yobsS)],yobsS[:np.argmin(yobsS)]	####
-	SAXSres=Slit1D(qS,qx_width=0.136,qy_width=qy_width,q_calc=qS)
+	SAXSres=Slit1D(qS,qx_width=0.136,qy_width=qy_widthS,q_calc=qS)
 	SAXSkernel=model.make_kernel([qS])
 
 	if os.path.isfile(f.replace('_SAXS','_USAXS')):
 		qU,yobsU=np.genfromtxt(f.replace('_SAXS','_USAXS'),unpack=True)
-		qy_width=float(open(f.replace('_SAXS','_USAXS')).readlines()[0].split('=')[-1])
-		plt.figtext(0.2,0.23,'USAXS qy_width:\n'+str(round(qy_width,6)),fontsize=6)
-		USAXSres=Slit1D(qU,qx_width=0.136,qy_width=qy_width,q_calc=qU)
+		qy_widthU=float(open(f.replace('_SAXS','_USAXS')).readlines()[0].split('=')[-1])
+		plt.figtext(0.2,0.23,'qy_widthU:\n'+str(round(qy_widthU,6)),fontsize=6)
+		USAXSres=Slit1D(qU,qx_width=0.136,qy_width=qy_widthU,q_calc=qU)
 		USAXSkernel=model.make_kernel([qU])
 		params.add('Uscale',params.valuesdict()['scale']/10,min=0);params.add('Ubackground',0,min=0)
 
@@ -90,6 +90,12 @@ for f in glob.glob('*_SAXS*.dat'):
 	for param in result.params.values():
 		logfile.write(str((param.name,'=',param.value,'+-',param.stderr)))
 	logfile.write('\n')
+
+plt.close('all')
+plt.plot(qU,res[:len(qU)])
+plt.plot(qS,res[len(qU):])
+plt.xscale('log')
+plt.savefig(filename+'_'+model.info.id+'_res.png',dpi=300)
 
 logfile.write(str(res_collect))
 
