@@ -47,7 +47,8 @@ for p in paths:
 			print('qmin = '+str(q[mincoord])+' A^-1')
 			argsgauss=np.where((q>=q[0])&(q<=-q[0]))
 			popt,pcov=optimize.curve_fit(gaussian,q[argsgauss],ybg[argsgauss],p0=[max(ybg),0,1e-4])
-			print('qy_width = '+str(popt[-1])+' A^-1')
+			HWHM=(2*np.log(2))**0.5*popt[-1]
+			print('qy_width = '+str(HWHM)+' A^-1')
 
 			plt.close('all')
 			if len(BGfiles)==1:
@@ -64,6 +65,6 @@ for p in paths:
 			plt.savefig(filename+'.png')
 
 			with open(filename+'_s_s_q.dat','a') as f:
-				f.write('#qy_width = '+str(popt[-1])+'\n')
+				f.write('#qy_width = '+str(HWHM)+'\n')
 				np.savetxt(f,np.transpose([q[mincoord:],yobs[mincoord:]]),fmt='%.16f')
 
