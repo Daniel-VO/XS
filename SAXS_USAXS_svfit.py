@@ -64,7 +64,8 @@ for f in glob.glob('*_SAXS*.dat'):
 		USAXSkernel=model.make_kernel([qU])
 		params.add('Uscale',params.valuesdict()['scale']/10,min=0);params.add('Ubackground',0,min=0)
 
-	result=lm.minimize(fitfunc,params,method='nelder')
+	result=lm.minimize(fitfunc,params)
+	result=lm.minimize(fitfunc,result.params,method='least_squares')
 	print(filename,sys.argv[1])
 	result.params.pretty_print()
 	prm=result.params.valuesdict()
