@@ -1,5 +1,5 @@
 """
-Created 14. February 2023 by Daniel Van Opdenbosch, Technical University of Munich
+Created 27. February 2023 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -25,30 +25,27 @@ for p in paths:
 			print('Warnung: Mehr als ein Untergrund!')
 		elif len(BGfiles)==1:
 			ttbg,ybg,epsbg=np.genfromtxt((i.replace('*','#') for i in open(BGfiles[0])),unpack=True)
-			argsavg=np.where((ttbg>=min(ttbg))&(ttbg<=-min(ttbg)))
-			ttbg-=np.average(ttbg[argsavg],weights=ybg[argsavg]**2)		#zero drift correction
-			bg=interpolate.interp1d(ttbg,ybg)
+			qbg=4*np.pi*np.sin(np.radians(ttbg/2))/1.5406
+			amaxbg=np.argmax(ybg)
+			qbg-=np.average(qbg[0:2*amaxbg+1],weights=ybg[0:2*amaxbg+1]**2)		#zero drift correction
+			argsgauss=np.where((qbg>=min(qbg))&(qbg<=-min(qbg)))
+			popt,pcov=optimize.curve_fit(gaussian,qbg[argsgauss],ybg[argsgauss],p0=[max(ybg),0,1e-4])
+			HWHM=(2*np.log(2))**0.5*popt[-1]									#HWHM
+			bg=interpolate.interp1d(qbg,ybg)									#bgint
 
 		for f in glob.glob('[!BG]'+p+s+'.ras'):
 			filename=os.path.splitext(f)[0]
 			print(filename)
 			tt,yobs,eps=np.genfromtxt((i.replace('*','#') for i in open(f)),unpack=True)
-			if min(tt)<0:
-				argsavg=np.where((tt>=min(tt))&(tt<=-min(tt)))
-				tt-=np.average(tt[argsavg],weights=yobs[argsavg]**2)			#zero drift correction
-			if len(BGfiles)==1:
-				argscut=np.where((tt>=min(ttbg))&(tt<=max(ttbg)))
-				tt=tt[argscut];yobs=yobs[argscut]
-				ybg=bg(tt)
-				yobs-=ybg													#bgcorr
-
-			q=4*np.pi*np.sin(np.radians(tt/2))/1.5406							#toq
+			q=4*np.pi*np.sin(np.radians(tt/2))/1.5406
+			amax=np.argmax(yobs)
+			q-=np.average(q[0:2*amax+1],weights=yobs[0:2*amax+1]**2)			#zero drift correction
+			argscut=np.where((q>=min(qbg))&(q<=max(qbg)))
+			q=q[argscut];yobs=yobs[argscut]										#cut
+			ybg=bg(q)
+			yobs-=ybg															#bgcorr
 			mincoord=int(np.where(yobs==max(yobs[np.where(q>[5e-4,5e-3][int(np.where(np.array(['*_USAXS','*_SAXS'])==s)[0][0])])]))[0][0])
-			print('qmin = '+str(q[mincoord])+' A^-1')
-			argsgauss=np.where((q>=q[0])&(q<=-q[0]))
-			popt,pcov=optimize.curve_fit(gaussian,q[argsgauss],ybg[argsgauss],p0=[max(ybg),0,1e-4])
-			HWHM=(2*np.log(2))**0.5*popt[-1]
-			print('qy_width = '+str(HWHM)+' A^-1')
+			print('qmin = '+str(q[mincoord])+' A^-1; qy_width = '+str(HWHM)+' A^-1')
 
 			plt.close('all')
 			if len(BGfiles)==1:
