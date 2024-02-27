@@ -56,7 +56,7 @@ for f in glob.glob('*_SAXS*.dat'):
 	qy_widthS=float(open(f).readlines()[0].split('=')[-1])
 	plt.figtext(0.98,0.97,'qy_widthS:\n'+str(round(qy_widthS,6)),fontsize=6,ha='right',va='top')
 	qS,yobsS=qS[:np.argmin(yobsS)],yobsS[:np.argmin(yobsS)]		####
-	qSkernel=np.append(qS,np.linspace(max(qS),10*max(qS)))
+	qSkernel=np.append(qS,np.linspace(max(qS),2*max(qS)))
 	SAXSres=Slit1D(qSkernel,qx_width=0.136,qy_width=qy_widthS,q_calc=qSkernel)
 	SAXSkernel=model.make_kernel([qSkernel])
 
@@ -64,7 +64,7 @@ for f in glob.glob('*_SAXS*.dat'):
 		qU,yobsU=np.genfromtxt(f.replace('_SAXS','_USAXS'),unpack=True)
 		qy_widthU=float(open(f.replace('_SAXS','_USAXS')).readlines()[0].split('=')[-1])
 		plt.figtext(0.2,0.23,'qy_widthU:\n'+str(round(qy_widthU,6)),fontsize=6)
-		qUkernel=np.append(qU,np.linspace(max(qU),10*max(qU)))
+		qUkernel=np.append(qU,np.linspace(max(qU),2*max(qU)))
 		USAXSres=Slit1D(qUkernel,qx_width=0.136,qy_width=qy_widthU,q_calc=qUkernel)
 		USAXSkernel=model.make_kernel([qUkernel])
 		params.add('Uscale',params.valuesdict()['scale']/10,min=0);params.add('Ubackground',0,min=0)
