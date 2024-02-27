@@ -43,7 +43,7 @@ for p in paths:
 				yobs-=ybg													#bgcorr
 
 			q=4*np.pi*np.sin(np.radians(tt/2))/1.5406							#toq
-			mincoord=int(np.where(yobs==max(yobs[np.where(q>[5e-4,5e-3][int(np.where(np.array(['*_USAXS','*_SAXS'])==s)[0])])]))[0])
+			mincoord=int(np.where(yobs==max(yobs[np.where(q>[5e-4,5e-3][int(np.where(np.array(['*_USAXS','*_SAXS'])==s)[0][0])])]))[0][0])
 			print('qmin = '+str(q[mincoord])+' A^-1')
 			argsgauss=np.where((q>=q[0])&(q<=-q[0]))
 			popt,pcov=optimize.curve_fit(gaussian,q[argsgauss],ybg[argsgauss],p0=[max(ybg),0,1e-4])
@@ -61,7 +61,7 @@ for p in paths:
 			if len(BGfiles)==1:
 				plt.plot(q,yobs+ybg);plt.plot(q,ybg)
 			plt.plot(q,yobs);plt.plot(q[mincoord:],yobs[mincoord:])
-			plt.xscale('log'),plt.yscale('log'),plt.xlim([[1e-4,1e-3][int(np.where(np.array(['*_USAXS','*_SAXS'])==s)[0])],None])
+			plt.xscale('log'),plt.yscale('log'),plt.xlim([[1e-4,1e-3][int(np.where(np.array(['*_USAXS','*_SAXS'])==s)[0][0])],None])
 			plt.savefig(filename+'.png')
 
 			with open(filename+'_s_s_q.dat','a') as f:
