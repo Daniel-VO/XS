@@ -1,5 +1,5 @@
 """
-Created 14. February 2023 by Daniel Van Opdenbosch, Technical University of Munich
+Created 27. February 2023 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -38,7 +38,6 @@ if str(sys.argv[1])=='unified_power_Rg':
 else:
 	for item in model.info.parameters._get_defaults().items():
 		params.add(item[0],item[1],min=0)
-params.add('background',0)
 
 os.system('mv '+model.info.id+'.log '+model.info.id+'.alt')
 logfile=open(model.info.id+'.log','a')
@@ -63,9 +62,9 @@ for f in glob.glob('*_SAXS*.dat'):
 		plt.figtext(0.2,0.23,'USAXS qy_width:\n'+str(round(qy_width,6)),fontsize=6)
 		USAXSres=Slit1D(qU,qx_width=0.136,qy_width=qy_width,q_calc=qU)
 		USAXSkernel=model.make_kernel([qU])
-		params.add('Uscale',params.valuesdict()['scale']/10,min=0);params.add('Ubackground',0)
+		params.add('Uscale',params.valuesdict()['scale']/10,min=0);params.add('Ubackground',0,min=0)
 
-	result=lm.minimize(fitfunc,params)
+	result=lm.minimize(fitfunc,params,method='nelder')
 	print(filename,sys.argv[1])
 	result.params.pretty_print()
 	prm=result.params.valuesdict()
