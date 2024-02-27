@@ -91,11 +91,11 @@ for f in glob.glob('*_SAXS*.dat'):
 		logfile.write(str((param.name,'=',param.value,'+-',param.stderr)))
 	logfile.write('\n')
 
-plt.close('all')
-plt.plot(qU,res[:len(qU)])
-plt.plot(qS,res[len(qU):])
-plt.xscale('log')
-plt.savefig(filename+'_'+model.info.id+'_res.png',dpi=300)
+	# ~ plt.close('all')
+	# ~ plt.plot(qU,res[:len(qU)])
+	# ~ plt.plot(qS,res[len(qU):])
+	# ~ plt.xscale('log')
+	# ~ plt.savefig(filename+'_'+model.info.id+'_res.png',dpi=300)
 
 logfile.write(str(res_collect))
 
