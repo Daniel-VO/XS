@@ -19,10 +19,10 @@ from sasmodels.direct_model import call_kernel
 def fitfunc(params):
 	prm=params.valuesdict()
 	global res
-	res=yobsS-SAXSres.apply(call_kernel(SAXSkernel,prm))[:len(yobsS)]
+	res=yobsS-SAXSres.apply(call_kernel(SAXSkernel,prm))[50:-50]
 	if os.path.isfile(f.replace('_SAXS','_USAXS')):
 		prm['scale']=prm['Uscale'];prm['background']=prm['Ubackground']
-		res=np.append(yobsU-USAXSres.apply(call_kernel(USAXSkernel,prm))[:len(yobsU)],res)
+		res=np.append(yobsU-USAXSres.apply(call_kernel(USAXSkernel,prm))[50:-50],res)
 	return abs(np.nan_to_num(res))**0.5
 
 model=load_model(str(sys.argv[1]))
@@ -37,8 +37,10 @@ if str(sys.argv[1])=='unified_power_Rg':
 		params.add('G'+str(level+1),400,min=0)
 else:
 	for item in model.info.parameters._get_defaults().items():
-		if '_exp' in item[0] or 'power' in item[0]:
+		if 'exp' in item[0] or 'power' in item[0]:
 			params.add(item[0],item[1],min=2,max=6)
+		elif 'length' in item[0] or 'rg' in item[0]:
+			params.add(item[0],item[1],min=4,max=20000)
 		else:
 			params.add(item[0],item[1],min=0)
 
@@ -54,35 +56,39 @@ for f in glob.glob('*_SAXS*.dat'):
 
 	qS,yobsS=np.genfromtxt(f,unpack=True)
 	qy_widthS=float(open(f).readlines()[0].split('=')[-1])
-	plt.figtext(0.98,0.97,'qy_widthS:\n'+str(round(qy_widthS,6)),fontsize=6,ha='right',va='top')
-	qS,yobsS=qS[:np.argmin(yobsS)],yobsS[:np.argmin(yobsS)]		####
-	qSkernel=np.append(qS,np.linspace(max(qS),2*max(qS)))
+	# ~ plt.figtext(0.98,0.97,'qy_widthS:\n'+str(round(qy_widthS,6)),fontsize=6,ha='right',va='top')
+
+	if os.path.isfile(f.replace('_SAXS','_USAXS')):
+		params.add('Uscale',params.valuesdict()['scale']/10,min=0);params.add('Ubackground',0,min=0)
+		qU,yobsU=np.genfromtxt(f.replace('_SAXS','_USAXS'),unpack=True)
+		qy_widthU=float(open(f.replace('_SAXS','_USAXS')).readlines()[0].split('=')[-1])
+		# ~ plt.figtext(0.2,0.23,'qy_widthU:\n'+str(round(qy_widthU,6)),fontsize=6)
+
+		qS,yobsS=qS[:np.argmin(yobsS)],yobsS[:np.argmin(yobsS)]								####
+		qS,yobsS=qS[np.where(qS>2e-2)],yobsS[np.where(qS>2e-2)]								####
+		qU,yobsU=qU[np.where(qU>4e-3)],yobsU[np.where(qU>4e-3)]								####
+
+		qUkernel=np.concatenate((np.linspace(0,min(qU)),qU,np.linspace(max(qU),2*max(qU))))
+		USAXSres=Slit1D(qUkernel,qx_width=0.136,qy_width=qy_widthU,q_calc=qUkernel)
+		USAXSkernel=model.make_kernel([qUkernel])
+
+	qSkernel=np.concatenate((np.linspace(0,min(qS)),qS,np.linspace(max(qS),2*max(qS))))
 	SAXSres=Slit1D(qSkernel,qx_width=0.136,qy_width=qy_widthS,q_calc=qSkernel)
 	SAXSkernel=model.make_kernel([qSkernel])
 
-	if os.path.isfile(f.replace('_SAXS','_USAXS')):
-		qU,yobsU=np.genfromtxt(f.replace('_SAXS','_USAXS'),unpack=True)
-		qy_widthU=float(open(f.replace('_SAXS','_USAXS')).readlines()[0].split('=')[-1])
-		plt.figtext(0.2,0.23,'qy_widthU:\n'+str(round(qy_widthU,6)),fontsize=6)
-		qUkernel=np.append(qU,np.linspace(max(qU),2*max(qU)))
-		USAXSres=Slit1D(qUkernel,qx_width=0.136,qy_width=qy_widthU,q_calc=qUkernel)
-		USAXSkernel=model.make_kernel([qUkernel])
-		params.add('Uscale',params.valuesdict()['scale']/10,min=0);params.add('Ubackground',0,min=0)
-
-	result=lm.minimize(fitfunc,params)
-	result=lm.minimize(fitfunc,result.params,method='least_squares')
+	result=lm.minimize(fitfunc,params,method='least_squares')
 	print(filename,sys.argv[1])
 	result.params.pretty_print()
 	prm=result.params.valuesdict()
 	res_collect+=np.sum(res)
 
 	plt.scatter(qS,yobsS,c='k',marker='.',s=2,linewidth=0)
-	plt.plot(qSkernel[:len(qS)],SAXSres.apply(call_kernel(SAXSkernel,prm))[:len(qS)],'0.3',linewidth=0.5)
+	plt.plot(qSkernel[50:-50],SAXSres.apply(call_kernel(SAXSkernel,prm))[50:-50],'0.3',linewidth=0.5)
 
 	if os.path.isfile(f.replace('_SAXS','_USAXS')):
 		prm['scale']=prm['Uscale'];prm['background']=prm['Ubackground']
 		plt.scatter(qU,yobsU,c='k',marker='.',s=2,linewidth=0)
-		plt.plot(qUkernel[:len(qU)],USAXSres.apply(call_kernel(USAXSkernel,prm))[:len(qU)],'0.3',linewidth=0.5)
+		plt.plot(qUkernel[50:-50],USAXSres.apply(call_kernel(USAXSkernel,prm))[50:-50],'0.3',linewidth=0.5)
 
 	plt.xscale('log');plt.yscale('log')
 
