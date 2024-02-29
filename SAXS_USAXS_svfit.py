@@ -58,15 +58,16 @@ for f in glob.glob('*_SAXS*.dat'):
 	qy_widthS=float(open(f).readlines()[0].split('=')[-1])
 	# ~ plt.figtext(0.98,0.97,'qy_widthS:\n'+str(round(qy_widthS,6)),fontsize=6,ha='right',va='top')
 
+	qS,yobsS=qS[:np.argmin(yobsS)],yobsS[:np.argmin(yobsS)]						####
+	qS,yobsS=qS[np.where(qS>2e-2)],yobsS[np.where(qS>2e-2)]						####
+
 	if os.path.isfile(f.replace('_SAXS','_USAXS')):
 		params.add('Uscale',params.valuesdict()['scale']/10,min=0);params.add('Ubackground',0,min=0)
 		qU,yobsU=np.genfromtxt(f.replace('_SAXS','_USAXS'),unpack=True)
 		qy_widthU=float(open(f.replace('_SAXS','_USAXS')).readlines()[0].split('=')[-1])
 		# ~ plt.figtext(0.2,0.23,'qy_widthU:\n'+str(round(qy_widthU,6)),fontsize=6)
 
-		qS,yobsS=qS[:np.argmin(yobsS)],yobsS[:np.argmin(yobsS)]								####
-		qS,yobsS=qS[np.where(qS>2e-2)],yobsS[np.where(qS>2e-2)]								####
-		qU,yobsU=qU[np.where(qU>4e-3)],yobsU[np.where(qU>4e-3)]								####
+		qU,yobsU=qU[np.where(qU>4e-3)],yobsU[np.where(qU>4e-3)]					####
 
 		qUkernel=np.concatenate((np.linspace(0,min(qU)),qU,np.linspace(max(qU),2*max(qU))))
 		USAXSres=Slit1D(qUkernel,qx_width=0.136,qy_width=qy_widthU,q_calc=qUkernel)
