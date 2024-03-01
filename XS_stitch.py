@@ -1,40 +1,46 @@
 """
-Created 14. February 2023 by Daniel Van Opdenbosch, Technical University of Munich
+Created 01. March 2023 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
 
 import os
 import glob
+import scipy
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy import interpolate
 
 for f in glob.glob('*_SAXS*.dat'):
 	filename=f.split('_SAXS')[0]
 	plt.close('all')
 
 	qS,yobsS=np.genfromtxt(f,unpack=True)
+	yobsS=scipy.signal.savgol_filter(yobsS,11,1)
+
+	qS,yobsS=qS[np.argmax(yobsS)+7:],yobsS[np.argmax(yobsS)+7:]		####
+
 	plt.plot(qS,yobsS)
 	expq=qS;expyobs=yobsS
 
 	if os.path.isfile(f.replace('_SAXS','_USAXS')):
 		qU,yobsU=np.genfromtxt(f.replace('_SAXS','_USAXS'),unpack=True)
+		yobsU=scipy.signal.savgol_filter(yobsU,11,1)
 
-		overlapU=np.where(qU>=qS[0]);overlapS=np.where(qS<=qU[-1])
-		intU=interpolate.interp1d(qU[overlapU],yobsU[overlapU])
-		yobsU*=np.average(yobsS[overlapS][1:]/intU(qS[overlapS][1:]),weights=yobsS[overlapS][1:])
+		qU,yobsU=qU[np.argmax(yobsU):],yobsU[np.argmax(yobsU):]		####
 
-		args=np.where(qU<=qS[0])
+		args=np.where(qU<qS[0])
 		qU,yobsU=qU[args],yobsU[args]
+
+		yobsU*=yobsS[0]/yobsU[-1]
 
 		plt.plot(qU,yobsU)
 		expq=np.append(expq,qU);expyobs=np.append(expyobs,yobsU)
 
 	if os.path.isfile(f.replace('_SAXS','_TXRD')):
 		qW,yobsW=np.genfromtxt(f.replace('_SAXS','_TXRD'),unpack=True)
+		yobsW=scipy.signal.savgol_filter(yobsW,11,1)
 
-		args=np.where(qW>=qS[-1])
+		args=np.where(qW>qS[-1])
 		qW,yobsW=qW[args],yobsW[args]
 
 		yobsW*=yobsS[-1]/yobsW[0]

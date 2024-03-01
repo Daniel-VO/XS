@@ -1,5 +1,5 @@
 """
-Created 27. February 2023 by Daniel Van Opdenbosch, Technical University of Munich
+Created 01. March 2024 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -18,7 +18,7 @@ paths.append('')
 
 for p in paths:
 	os.system('rm '+p+'*.dat '+p+'*.png')
-	for s in ['*_USAXS','*_SAXS']:
+	for s in ['*_USAXS','*_SAXS','*_TXRD']:
 		BGfiles=glob.glob(p+s+'*BG.ras')
 
 		if len(BGfiles)>1:
@@ -44,7 +44,7 @@ for p in paths:
 			q=q[argscut];yobs=yobs[argscut]										#cut
 			ybg=bg(q)
 			yobs-=ybg															#bgcorr
-			mincoord=int(np.where(yobs==max(yobs[np.where(q>[5e-4,5e-3][int(np.where(np.array(['*_USAXS','*_SAXS'])==s)[0][0])])]))[0][0])
+			mincoord=np.where(yobs<0)[-1][-1]+1
 			print('qmin = '+str(q[mincoord])+' A^-1; qy_width = '+str(HWHM)+' A^-1')
 
 			plt.close('all')
@@ -58,7 +58,7 @@ for p in paths:
 			if len(BGfiles)==1:
 				plt.plot(q,yobs+ybg);plt.plot(q,ybg)
 			plt.plot(q,yobs);plt.plot(q[mincoord:],yobs[mincoord:])
-			plt.xscale('log'),plt.yscale('log'),plt.xlim([[1e-4,1e-3][int(np.where(np.array(['*_USAXS','*_SAXS'])==s)[0][0])],None])
+			plt.xscale('log'),plt.yscale('log'),plt.xlim([[5e-4,5e-3,5e-2][int(np.where(np.array(['*_USAXS','*_SAXS','*_TXRD'])==s)[0][0])],None])
 			plt.savefig(filename+'.png')
 
 			with open(filename+'_s_s_q.dat','a') as f:
