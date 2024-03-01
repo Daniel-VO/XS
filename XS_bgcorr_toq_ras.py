@@ -6,9 +6,9 @@ This program is free software: you can redistribute it and/or modify it under th
 
 import os
 import glob
+import scipy
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy import interpolate,optimize
 
 def gaussian(x,a,x0,sigma):
 	return a*np.exp(-((x-x0)/sigma)**2/2)
@@ -29,9 +29,9 @@ for p in paths:
 			amaxbg=np.argmax(ybg)
 			qbg-=np.average(qbg[0:2*amaxbg+1],weights=ybg[0:2*amaxbg+1]**2)		#zero drift correction
 			argsgauss=np.where((qbg>=min(qbg))&(qbg<=-min(qbg)))
-			popt,pcov=optimize.curve_fit(gaussian,qbg[argsgauss],ybg[argsgauss],p0=[max(ybg),0,1e-4])
+			popt,pcov=scipy.optimize.curve_fit(gaussian,qbg[argsgauss],ybg[argsgauss],p0=[max(ybg),0,1e-4])
 			HWHM=(2*np.log(2))**0.5*popt[-1]									#HWHM
-			bg=interpolate.interp1d(qbg,ybg)									#bgint
+			bg=scipy.interpolate.interp1d(qbg,ybg)									#bgint
 
 		for f in glob.glob('[!BG]'+p+s+'.ras'):
 			filename=os.path.splitext(f)[0]
@@ -44,7 +44,7 @@ for p in paths:
 			q=q[argscut];yobs=yobs[argscut]										#cut
 			ybg=bg(q)
 			yobs-=ybg															#bgcorr
-			mincoord=np.where(yobs<0)[-1][-1]+1
+			mincoord=np.where(scipy.signal.savgol_filter(yobs,2,1)<0)[-1][-1]+1
 			print('qmin = '+str(q[mincoord])+' A^-1; qy_width = '+str(HWHM)+' A^-1')
 
 			plt.close('all')
