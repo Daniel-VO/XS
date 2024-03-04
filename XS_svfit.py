@@ -37,12 +37,7 @@ if str(sys.argv[1])=='unified_power_Rg':
 		params.add('G'+str(level+1),400,min=0)
 else:
 	for item in model.info.parameters._get_defaults().items():
-		if 'exp' in item[0] or 'power' in item[0]:
-			params.add(item[0],item[1],min=2,max=6)
-		elif 'length' in item[0] or 'rg' in item[0]:
-			params.add(item[0],item[1],min=4,max=20000)
-		else:
-			params.add(item[0],item[1],min=0)
+		params.add(item[0],item[1],min=0)
 
 os.system('mv '+model.info.id+'.log '+model.info.id+'.alt')
 logfile=open(model.info.id+'.log','a')
@@ -58,7 +53,6 @@ for f in glob.glob('*_SAXS*.dat'):
 	qy_widthS=float(open(f).readlines()[0].split('=')[-1])
 	# ~ plt.figtext(0.98,0.97,'qy_widthS:\n'+str(round(qy_widthS,6)),fontsize=6,ha='right',va='top')
 
-	qS,yobsS=qS[np.argmax(yobsS):],yobsS[np.argmax(yobsS):]						####
 	qS,yobsS=qS[:np.argmin(yobsS)],yobsS[:np.argmin(yobsS)]						####
 	qS,yobsS=qS[np.where(qS>2e-2)],yobsS[np.where(qS>2e-2)]						####
 
