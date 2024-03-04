@@ -58,6 +58,7 @@ for f in glob.glob('*_SAXS*.dat'):
 	qy_widthS=float(open(f).readlines()[0].split('=')[-1])
 	# ~ plt.figtext(0.98,0.97,'qy_widthS:\n'+str(round(qy_widthS,6)),fontsize=6,ha='right',va='top')
 
+	qS,yobsS=qS[np.argmax(yobsS):],yobsS[np.argmax(yobsS):]						####
 	qS,yobsS=qS[:np.argmin(yobsS)],yobsS[:np.argmin(yobsS)]						####
 	qS,yobsS=qS[np.where(qS>2e-2)],yobsS[np.where(qS>2e-2)]						####
 

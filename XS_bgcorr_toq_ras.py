@@ -44,7 +44,7 @@ for p in paths:
 			q=q[argscut];yobs=yobs[argscut]										#cut
 			ybg=bg(q)
 			yobs-=ybg															#bgcorr
-			mincoord=np.where(scipy.signal.savgol_filter(yobs,2,1)<0)[-1][-1]+1
+			mincoord=np.where(scipy.signal.savgol_filter(yobs,3,1)<0)[-1][-1]+1
 			print('qmin = '+str(q[mincoord])+' A^-1; qy_width = '+str(HWHM)+' A^-1')
 
 			plt.close('all')
