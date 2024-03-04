@@ -64,11 +64,11 @@ for f in glob.glob('*_SAXS*.dat'):
 
 		qU,yobsU=qU[np.where(qU>4e-3)],yobsU[np.where(qU>4e-3)]					####
 
-		qUkernel=np.concatenate((np.linspace(0,min(qU)),qU,np.linspace(max(qU),2*max(qU))))
+		qUkernel=np.concatenate((np.linspace(min(qU)/2,min(qU)),qU,np.linspace(max(qU),max(qU)*2)))
 		USAXSres=Slit1D(qUkernel,qx_width=0.136,qy_width=qy_widthU,q_calc=qUkernel)
 		USAXSkernel=model.make_kernel([qUkernel])
 
-	qSkernel=np.concatenate((np.linspace(0,min(qS)),qS,np.linspace(max(qS),2*max(qS))))
+	qSkernel=np.concatenate((np.linspace(min(qS)/2,min(qS)),qS,np.linspace(max(qS),max(qS)*2)))
 	SAXSres=Slit1D(qSkernel,qx_width=0.136,qy_width=qy_widthS,q_calc=qSkernel)
 	SAXSkernel=model.make_kernel([qSkernel])
 
