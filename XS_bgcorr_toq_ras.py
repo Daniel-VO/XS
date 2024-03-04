@@ -1,5 +1,5 @@
 """
-Created 01. March 2024 by Daniel Van Opdenbosch, Technical University of Munich
+Created 04. March 2024 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -31,7 +31,7 @@ for p in paths:
 			argsgauss=np.where((qbg>=min(qbg))&(qbg<=-min(qbg)))
 			popt,pcov=scipy.optimize.curve_fit(gaussian,qbg[argsgauss],ybg[argsgauss],p0=[max(ybg),0,1e-4])
 			HWHM=(2*np.log(2))**0.5*popt[-1]									#HWHM
-			bg=scipy.interpolate.interp1d(qbg,ybg)									#bgint
+			bg=scipy.interpolate.interp1d(qbg,ybg)								#bgint
 
 		for f in glob.glob('[!BG]'+p+s+'.ras'):
 			filename=os.path.splitext(f)[0]
