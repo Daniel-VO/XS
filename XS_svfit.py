@@ -16,6 +16,9 @@ from sasmodels.core import load_model
 from sasmodels.resolution import Slit1D
 from sasmodels.direct_model import call_kernel
 
+def pad(q):
+	return np.concatenate((np.linspace(min(q)/2,min(q)),q,np.linspace(max(q),max(q)*2)))
+
 def fitfunc(params):
 	prm=params.valuesdict()
 	global res
@@ -64,12 +67,10 @@ for f in glob.glob('*_SAXS*.dat'):
 
 		qU,yobsU=qU[np.where(qU>4e-3)],yobsU[np.where(qU>4e-3)]					####
 
-		qUkernel=np.concatenate((np.linspace(min(qU)/2,min(qU)),qU,np.linspace(max(qU),max(qU)*2)))
-		USAXSres=Slit1D(qUkernel,qx_width=0.136,qy_width=qy_widthU,q_calc=qUkernel)
+		USAXSres=Slit1D(pad(qU),qx_width=0.136,qy_width=qy_widthU,q_calc=qUkernel)
 		USAXSkernel=model.make_kernel([qUkernel])
 
-	qSkernel=np.concatenate((np.linspace(min(qS)/2,min(qS)),qS,np.linspace(max(qS),max(qS)*2)))
-	SAXSres=Slit1D(qSkernel,qx_width=0.136,qy_width=qy_widthS,q_calc=qSkernel)
+	SAXSres=Slit1D(pad(qS),qx_width=0.136,qy_width=qy_widthS,q_calc=qSkernel)
 	SAXSkernel=model.make_kernel([qSkernel])
 
 	result=lm.minimize(fitfunc,params,method='least_squares')
