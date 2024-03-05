@@ -10,10 +10,15 @@ import scipy
 import numpy as np
 import matplotlib.pyplot as plt
 
+def toq(tt):
+	return 4*np.pi*np.sin(np.radians(ttbg/2))/1.5406
+
+def zdc(q,y):
+	amax=np.argmax(y)
+	return q-np.average(q[0:2*amax+1],weights=y[0:2*amax+1]**2)
+
 def gaussian(x,a,x0,sigma):
 	return a*np.exp(-((x-x0)/sigma)**2/2)
-
-lamb=1.5406
 
 paths=glob.glob('*/')
 paths.append('')
@@ -27,9 +32,8 @@ for p in paths:
 			print('Warnung: Mehr als ein Untergrund!')
 		elif len(BGfiles)==1:
 			ttbg,ybg,epsbg=np.genfromtxt((i.replace('*','#') for i in open(BGfiles[0])),unpack=True)
-			qbg=4*np.pi*np.sin(np.radians(ttbg/2))/lamb
-			amaxbg=np.argmax(ybg)
-			qbg-=np.average(qbg[0:2*amaxbg+1],weights=ybg[0:2*amaxbg+1]**2)		#zero drift correction
+			qbg=toq(ttbg)														#to q
+			qbg=zdc(qbg,ybg)													#zero drift correction
 			argsgauss=np.where((qbg>=min(qbg))&(qbg<=-min(qbg)))
 			popt,pcov=scipy.optimize.curve_fit(gaussian,qbg[argsgauss],ybg[argsgauss],p0=[max(ybg),0,1e-4])
 			HWHM=(2*np.log(2))**0.5*popt[-1]									#HWHM
@@ -39,9 +43,8 @@ for p in paths:
 			filename=os.path.splitext(f)[0]
 			print(filename)
 			tt,yobs,eps=np.genfromtxt((i.replace('*','#') for i in open(f)),unpack=True)
-			q=4*np.pi*np.sin(np.radians(tt/2))/lamb
-			amax=np.argmax(yobs)
-			q-=np.average(q[0:2*amax+1],weights=yobs[0:2*amax+1]**2)			#zero drift correction
+			q=toq(tt)															#to q
+			q=zdc(q,yobs)														#zero drift correction
 			argscut=np.where((q>=min(qbg))&(q<=max(qbg)))
 			q=q[argscut];yobs=yobs[argscut]										#cut
 			ybg=bg(q)
