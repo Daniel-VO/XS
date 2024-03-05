@@ -67,10 +67,12 @@ for f in glob.glob('*_SAXS*.dat'):
 
 		qU,yobsU=qU[np.where(qU>4e-3)],yobsU[np.where(qU>4e-3)]					####
 
-		USAXSres=Slit1D(pad(qU),qx_width=0.136,qy_width=qy_widthU,q_calc=qUkernel)
+		qUkernel=pad(qU)
+		USAXSres=Slit1D(qUkernel,qx_width=0.136,qy_width=qy_widthU,q_calc=qUkernel)
 		USAXSkernel=model.make_kernel([qUkernel])
 
-	SAXSres=Slit1D(pad(qS),qx_width=0.136,qy_width=qy_widthS,q_calc=qSkernel)
+	qSkernel=pad(qS)
+	SAXSres=Slit1D(qSkernel,qx_width=0.136,qy_width=qy_widthS,q_calc=qSkernel)
 	SAXSkernel=model.make_kernel([qSkernel])
 
 	result=lm.minimize(fitfunc,params,method='least_squares')
