@@ -58,7 +58,7 @@ for p in paths:
 			if len(BGfiles)==1:
 				plt.plot(q,yobs+ybg);plt.plot(q,ybg)
 			plt.plot(q,yobs);plt.plot(q[mincoord:],yobs[mincoord:])
-			plt.xscale('log'),plt.yscale('log'),plt.xlim([[5e-4,5e-3,5e-2][int(np.where(np.array(['*_USAXS','*_SAXS','*_TXRD'])==s)[0][0])],None]),plt.ylim([None,max(yobs*1.05)])
+			plt.xscale('log'),plt.yscale('log'),plt.xlim([[5e-4,5e-3,5e-2][int(np.where(np.array(['*_USAXS','*_SAXS','*_TXRD'])==s)[0][0])],None]),plt.ylim([None,2*max(yobs)])
 			plt.savefig(filename+'.png')
 
 			with open(filename+'_s_s_q.dat','a') as f:
