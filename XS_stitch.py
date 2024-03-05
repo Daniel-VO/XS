@@ -14,7 +14,6 @@ smpoints=21
 
 for f in glob.glob('*_SAXS*.dat'):
 	filename=f.split('_SAXS')[0]
-	plt.close('all')
 
 	qS,yobsS=np.genfromtxt(f,unpack=True)
 	yobsS=scipy.signal.savgol_filter(yobsS,smpoints,1)
@@ -44,6 +43,8 @@ for f in glob.glob('*_SAXS*.dat'):
 			args=np.where(qW>max(qS))
 			qW,yobsW=qW[args],yobsW[args]
 			yobsW*=yobsS[-1]/yobsW[0]
+
+	plt.close('all')
 
 	plt.plot(qU,yobsU)
 	plt.plot(qS,yobsS)
