@@ -11,7 +11,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def toq(tt):
-	return 4*np.pi*np.sin(np.radians(ttbg/2))/1.5406
+	return 4*np.pi*np.sin(np.radians(tt/2))/1.5406
 
 def zdc(q,y):
 	amax=np.argmax(y)
