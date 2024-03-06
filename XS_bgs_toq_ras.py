@@ -61,7 +61,7 @@ for p in paths:
 			if len(BGfiles)==1:
 				plt.plot(q,yobs+ybg);plt.plot(q,ybg)
 			plt.plot(q,yobs);plt.plot(q,yobs)
-			plt.xscale('log'),plt.yscale('log'),plt.xlim([[5e-4,5e-3,5e-2][int(np.where(np.array(['*_USAXS','*_SAXS','*_TXRD'])==s)[0][0])],None]),plt.ylim([None,2*max(yobs)])
+			plt.xscale('log'),plt.yscale('log'),plt.xlim([[1e-4,1e-3,1e-2][int(np.where(np.array(['*_USAXS','*_SAXS','*_TXRD'])==s)[0][0])],None]),plt.ylim([None,2*max(yobs)])
 			plt.savefig(filename+'.png')
 
 			with open(filename+'_bgs_toq.dat','a') as f:
