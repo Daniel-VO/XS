@@ -31,12 +31,14 @@ for p in paths:
 		if len(BGfiles)>1:
 			print('Warnung: Mehr als ein Untergrund!')
 		elif len(BGfiles)==1:
+			print(filename)
 			ttbg,ybg,epsbg=np.genfromtxt((i.replace('*','#') for i in open(BGfiles[0])),unpack=True)
 			qbg=toq(ttbg)														#to q
 			qbg=zdc(qbg,ybg)													#zero drift correction
 			argsgauss=np.where((qbg>=min(qbg))&(qbg<=-min(qbg)))
 			popt,pcov=scipy.optimize.curve_fit(gaussian,qbg[argsgauss],ybg[argsgauss],p0=[max(ybg),0,1e-4])
 			HWHM=(2*np.log(2))**0.5*popt[-1]									#HWHM
+			print('qy_width = '+str(HWHM)+' A^-1')
 			bg=scipy.interpolate.interp1d(qbg,ybg)								#bgint
 
 		for f in glob.glob('[!BG]'+p+s+'.ras'):
@@ -48,7 +50,6 @@ for p in paths:
 			q=q[argscut];yobs=yobs[argscut]										#cut
 			ybg=bg(q)
 			yobs-=ybg															#bgcorr
-			print(filename,'qy_width = '+str(HWHM)+' A^-1')
 
 			plt.close('all')
 			if len(BGfiles)==1:
