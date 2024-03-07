@@ -1,5 +1,5 @@
 """
-Created 05. March 2024 by Daniel Van Opdenbosch, Technical University of Munich
+Created 07. March 2024 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -56,8 +56,7 @@ for f in glob.glob('*_SAXS*.dat'):
 	qy_widthS=float(open(f).readlines()[0].split('=')[-1])
 	# ~ plt.figtext(0.98,0.97,'qy_widthS:\n'+str(round(qy_widthS,6)),fontsize=6,ha='right',va='top')
 
-	qS,yobsS=qS[:np.argmin(yobsS)],yobsS[:np.argmin(yobsS)]						####
-	qS,yobsS=qS[np.where(qS>2e-2)],yobsS[np.where(qS>2e-2)]						####
+	# ~ qS,yobsS=qS[np.where(qS>1e-2)],yobsS[np.where(qS>1e-2)]						####
 
 	if os.path.isfile(f.replace('_SAXS','_USAXS')):
 		params.add('Uscale',params.valuesdict()['scale']/10,min=0);params.add('Ubackground',0,min=0)
@@ -65,7 +64,7 @@ for f in glob.glob('*_SAXS*.dat'):
 		qy_widthU=float(open(f.replace('_SAXS','_USAXS')).readlines()[0].split('=')[-1])
 		# ~ plt.figtext(0.2,0.23,'qy_widthU:\n'+str(round(qy_widthU,6)),fontsize=6)
 
-		qU,yobsU=qU[np.where(qU>4e-3)],yobsU[np.where(qU>4e-3)]					####
+		# ~ qU,yobsU=qU[np.where(qU>1e-3)],yobsU[np.where(qU>1e-3)]					####
 
 		qUkernel=pad(qU)
 		USAXSres=Slit1D(qUkernel,qx_width=0.136,qy_width=qy_widthU,q_calc=qUkernel)
