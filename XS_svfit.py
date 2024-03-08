@@ -1,5 +1,5 @@
 """
-Created 07. March 2024 by Daniel Van Opdenbosch, Technical University of Munich
+Created 08. March 2024 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -47,14 +47,8 @@ logfile=open(model.info.id+'.log','a')
 res_collect=0
 for f in glob.glob('*_SAXS*.dat'):
 	filename=f.split('_SAXS')[0]
-	plt.close('all')
-	mpl.rc('text',usetex=True)
-	mpl.rc('text.latex',preamble=r'\usepackage[helvet]{sfmath}')
-	plt.figure(figsize=(7.5/2.54,5.3/2.54))
-
 	qS,yobsS=np.genfromtxt(f,unpack=True)
 	qy_widthS=float(open(f).readlines()[0].split('=')[-1])
-	# ~ plt.figtext(0.98,0.97,'qy_widthS:\n'+str(round(qy_widthS,6)),fontsize=6,ha='right',va='top')
 
 	# ~ qS,yobsS=qS[np.where(qS>1e-2)],yobsS[np.where(qS>1e-2)]						####
 
@@ -62,7 +56,6 @@ for f in glob.glob('*_SAXS*.dat'):
 		params.add('Uscale',params.valuesdict()['scale']/10,min=0);params.add('Ubackground',0,min=0)
 		qU,yobsU=np.genfromtxt(f.replace('_SAXS','_USAXS'),unpack=True)
 		qy_widthU=float(open(f.replace('_SAXS','_USAXS')).readlines()[0].split('=')[-1])
-		# ~ plt.figtext(0.2,0.23,'qy_widthU:\n'+str(round(qy_widthU,6)),fontsize=6)
 
 		# ~ qU,yobsU=qU[np.where(qU>1e-3)],yobsU[np.where(qU>1e-3)]					####
 
@@ -79,6 +72,11 @@ for f in glob.glob('*_SAXS*.dat'):
 	result.params.pretty_print()
 	prm=result.params.valuesdict()
 	res_collect+=np.sum(res)
+
+	plt.close('all')
+	mpl.rc('text',usetex=True)
+	mpl.rc('text.latex',preamble=r'\usepackage[helvet]{sfmath}')
+	plt.figure(figsize=(7.5/2.54,5.3/2.54))
 
 	plt.scatter(qS,yobsS,c='k',marker='.',s=2,linewidth=0)
 	plt.plot(qSkernel[50:-50],SAXSres.apply(call_kernel(SAXSkernel,prm))[50:-50],'0.3',linewidth=0.5)
