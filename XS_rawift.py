@@ -39,6 +39,6 @@ for f in glob.glob('*_stitch.dat'):
 	plt.plot(ift[0].r,ift[0].p)
 	plt.savefig(filename+'_pr.png')
 
-	raw.save_ift(ift[0],filename+'.ift','./')
+	raw.save_ift(ift[0],filename+'.ift')
 
-raw.save_report('report.pdf','./',profiles=profiles,ifts=ifts)
+raw.save_report('report.pdf',profiles=profiles,ifts=ifts)
