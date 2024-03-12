@@ -12,6 +12,8 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import bioxtasraw.RAWAPI as raw
 
+profiles=[];ifts=[]
+
 for f in glob.glob('*_stitch.dat'):
 	filename=os.path.splitext(f)[0]
 	q,yobs=np.genfromtxt(f,unpack=True)
@@ -21,11 +23,12 @@ for f in glob.glob('*_stitch.dat'):
 	plt.close('all')
 	plt.plot(q,yobs)
 
-	args=np.where((q>=0.1)&(q<=10))											####
+	args=np.where((q>=1)&(q<=1.5))											####
 
-	profile=raw.make_profile(q[args],yobs[args],np.ones(len(args[0])),'profile')
+	profile=raw.make_profile(q[args],yobs[args],np.ones(len(args[0])),filename)
 	guinier_results=raw.auto_guinier(profile)
 	ift=raw.bift(profile)
+	profiles.append(profile);ifts.append(ift[0])
 
 	plt.plot(ift[0].q_orig,ift[0].i_orig)
 	plt.plot(ift[0].q_orig,ift[0].i_fit)
@@ -37,4 +40,5 @@ for f in glob.glob('*_stitch.dat'):
 	plt.savefig(filename+'_pr.png')
 
 	raw.save_ift(ift[0],filename+'.ift','./')
-	raw.save_report(filename+'.pdf','./',[profile],[ift[0]])
+
+raw.save_report('report.pdf','./',profiles=profiles,ifts=ifts)
