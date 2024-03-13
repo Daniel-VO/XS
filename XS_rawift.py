@@ -12,33 +12,37 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import bioxtasraw.RAWAPI as raw
 
+ranges=[[1e-3,1e-1],
+		[1e-1,1e1]]
+
 profiles=[];ifts=[]
 
-for f in glob.glob('*_stitch.dat'):
-	filename=os.path.splitext(f)[0]
-	q,yobs=np.genfromtxt(f,unpack=True)
+for r in ranges:
+	for f in glob.glob('*_stitch.dat'):
+		filename=os.path.splitext(f)[0]+'_'+str(r)
+		q,yobs=np.genfromtxt(f,unpack=True)
 
-	q,yobs=q[np.argmax(yobs):],yobs[np.argmax(yobs):]							####
+		q,yobs=q[np.argmax(yobs):],yobs[np.argmax(yobs):]						####
 
-	plt.close('all')
-	plt.plot(q,yobs)
+		plt.close('all')
+		plt.plot(q,yobs)
 
-	args=np.where((q>=1)&(q<=1.5))											####
+		args=np.where((q>=r[0])&(q<=r[1]))										####
 
-	profile=raw.make_profile(q[args],yobs[args],np.ones(len(args[0])),filename)
-	guinier_results=raw.auto_guinier(profile)
-	ift=raw.bift(profile)
-	profiles.append(profile);ifts.append(ift[0])
+		profile=raw.make_profile(q[args],yobs[args],np.ones(len(args[0])),filename)
+		guinier_results=raw.auto_guinier(profile)
+		ift=raw.bift(profile)
+		profiles.append(profile);ifts.append(ift[0])
 
-	plt.plot(ift[0].q_orig,ift[0].i_orig)
-	plt.plot(ift[0].q_orig,ift[0].i_fit)
-	plt.xscale('log');plt.yscale('log')
-	plt.savefig(filename+'_iq.png')
+		plt.plot(ift[0].q_orig,ift[0].i_orig)
+		plt.plot(ift[0].q_orig,ift[0].i_fit)
+		plt.xscale('log');plt.yscale('log');plt.xlim([1e-4,None])
+		plt.savefig(filename+'_iq.png')
 
-	plt.close('all')
-	plt.plot(ift[0].r,ift[0].p)
-	plt.savefig(filename+'_pr.png')
+		plt.close('all')
+		plt.plot(ift[0].r,ift[0].p)
+		plt.savefig(filename+'_pr.png')
 
-	raw.save_ift(ift[0],filename+'.ift')
+		raw.save_ift(ift[0],filename+'.ift')
 
 raw.save_report('report.pdf',profiles=profiles,ifts=ifts)
