@@ -1,5 +1,5 @@
 """
-Created 17. Januar 2023 by Daniel Van Opdenbosch, Technical University of Munich
+Created 18. Maerz 2023 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -32,7 +32,7 @@ for f in glob.glob('*.img'):
 	ttmin,ttmax=take('SCAN_DET_ROTATION',[0,1])
 	img.data=np.pad(img.data,((0,0),(int(img.shape[1]+2*ttmin*img.shape[1]/(ttmax-ttmin)),0)))
 	fs=(img.shape[0]**2+img.shape[1]**2)**0.5
-	img.data=scipy.ndimage.rotate(img.data,phi-90-chi)
+	img.data=scipy.ndimage.rotate(img.data,-90-chi)
 	img.data=img.data[:img.shape[0]//2*2,:img.shape[1]//2*2]
 	padx=int((fs-img.shape[0])/2);pady=int((fs-img.shape[1])/2)
 	img.data=np.pad(img.data,((padx,padx),(pady,pady)))
