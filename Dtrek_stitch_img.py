@@ -1,5 +1,5 @@
 """
-Created 18. Maerz 2023 by Daniel Van Opdenbosch, Technical University of Munich
+Created 19. Maerz 2023 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -14,7 +14,7 @@ import fabio
 
 def profile(data,qlim,azilim,rbins,abins):
 	y,x=np.indices((data.shape))
-	xrel=x-data.shape[1]/2;yrel=y-data.shape[0]/2
+	xrel=x-data.shape[1]/2+0.5;yrel=y-data.shape[0]/2+0.5
 	q0=4*np.pi*np.sin((xrel**2+yrel**2)**0.5*np.arctan(pxsizeX/detdist)/2)/wavelength;azi0=-np.degrees(np.angle(xrel+yrel*1j))
 	args=np.where((q0>=qlim[0])&(q0<=qlim[1])&(azi0>=azilim[0])&(azi0<=azilim[1]))
 	ints,q,azi=np.histogram2d(q0[args].flatten(),azi0[args].flatten(),weights=data[args].flatten(),bins=(rbins,abins))
