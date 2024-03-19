@@ -1,5 +1,5 @@
 """
-Created 07. March 2024 by Daniel Van Opdenbosch, Technical University of Munich
+Created 19. March 2024 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -38,7 +38,7 @@ for p in paths:
 			if s=='*_USAXS' or s=='*_SAXS':
 				argsgauss=np.where((qbg>=min(qbg))&(qbg<=-min(qbg)))
 				popt,pcov=scipy.optimize.curve_fit(gaussian,qbg[argsgauss],ybg[argsgauss],p0=[max(ybg),0,1e-4])
-				HWHM=(2*np.log(2))**0.5*popt[-1]									#HWHM
+				HWHM=(2*np.log(2))**0.5*popt[-1]								#HWHM
 			else:
 				HWHM=0
 			print('qy_width = '+str(HWHM)+' A^-1')
@@ -54,7 +54,6 @@ for p in paths:
 			q=q[argscut];yobs=yobs[argscut]										#cut
 			ybg=bg(q)
 			yobs-=ybg															#bgcorr
-
 
 			plt.close('all')
 			if len(BGfiles)==1:
