@@ -13,9 +13,7 @@ import matplotlib.pyplot as plt
 import bioxtasraw.RAWAPI as raw
 
 ranges=[
-		[1e-3,4e-2],
-		[4e-2,7e-1],
-		[7e-1,1e1]
+		[6e-2,6e-1],
 		]
 
 os.system('mv results.log results.alt')
@@ -30,10 +28,11 @@ for r in ranges:
 		plt.plot(q,yobs)
 
 		args=np.where((q>=r[0])&(q<=r[1]))										####
-
-		profile=raw.make_profile(q[args],yobs[args],np.ones(len(args[0])),filename)
-		guinier=raw.auto_guinier(profile)
+		profile=raw.make_profile(q[args],yobs[args],np.ones(len(q[args])),filename)
 		ift=raw.bift(profile)
+
+		profile=raw.make_profile(q,yobs,np.ones(len(q)),filename)
+		guinier=raw.auto_guinier(profile)
 
 		plt.plot(ift[0].q_orig,ift[0].i_orig)
 		plt.plot(ift[0].q_orig,ift[0].i_fit)
