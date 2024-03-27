@@ -31,11 +31,13 @@ for f in glob.glob('*.img'):
 	detdist=take('PXD_GONIO_VALUES',-1);detsizeX,detsizeY=take('PXD_DETECTOR_SIZE',[0,1]);beamcenterX,beamcenterY,pxsizeX,pxsizeY=take('PXD_SPATIAL_DISTORTION_INFO',[0,1,2,3]);wavelength=take('SOURCE_WAVELENGTH',-1);omega,chi,phi=take('CRYSTAL_GONIO_VALUES',[0,1,2])
 
 	if beamcenterX>1 and beamcenterY>1:
-		padx0=int((beamcenterX-img.shape[1]/2)*(np.sign(beamcenterX-img.shape[1]/2)+1))
-		pady0=int((beamcenterY-img.shape[0]/2)*(np.sign(beamcenterY-img.shape[0]/2)+1))
-		padx1=int((img.shape[1]/2-beamcenterX)*(np.sign(img.shape[1]/2-beamcenterX)+1))
-		pady1=int((img.shape[0]/2-beamcenterY)*(np.sign(img.shape[0]/2-beamcenterY)+1))
-		img.data=np.pad(img.data,((padx0,padx1),(pady0,pady1)))
+		padx0=int((img.shape[1]/2-beamcenterX)*(np.sign(img.shape[1]/2-beamcenterX)+1))
+		pady0=int((img.shape[0]/2-beamcenterY)*(np.sign(img.shape[0]/2-beamcenterY)+1))
+		padx1=int((beamcenterX-img.shape[1]/2)*(np.sign(beamcenterX-img.shape[1]/2)+1))
+		pady1=int((beamcenterY-img.shape[0]/2)*(np.sign(beamcenterY-img.shape[0]/2)+1))
+		img.data=np.pad(img.data,((pady0,pady1),(padx0,padx1)))
+
+	print(beamcenterX,img.shape[1]/2,beamcenterY,img.shape[0]/2)
 
 	plt.imsave(filename+'.png',img.data,cmap='coolwarm')
 
