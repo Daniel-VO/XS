@@ -72,8 +72,8 @@ for f in glob.glob('*.img'):
 	mpl.rc('text',usetex=True)
 	mpl.rc('text.latex',preamble=r'\usepackage[helvet]{sfmath}')
 	plt.subplot(projection='polar')
-	q0,azi0,q,azi,ints=profile(img.data,(0,np.inf),(-180,180),2,2);plt.ylim([None,np.max(q0)/2.3])
-	img.data[np.where(q0<np.max(q0)/18)]=0										####
+	q0,azi0,q,azi,ints=profile(img.data,(0,np.inf),(-180,180),2,2)
+	img.data[np.where(q0<np.max(q0)/18)]=0;plt.ylim([None,np.max(q0)/2.3])		####
 	plt.pcolormesh(np.radians(azi0),q0,img.data,cmap='coolwarm',vmax=np.quantile(img.data,1-1e-4));plt.grid(True)
 	for i in integrators:
 		q0,azi0,q,azi,ints=profile(i[0],i[1],i[2],i[3]+100,i[4]+100)
