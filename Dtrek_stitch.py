@@ -34,5 +34,5 @@ for fnp in filenamepatterns:
 		stack.append(img.data)
 
 	stack=np.max(stack,axis=0)/np.max(stack)
-	plt.imsave(fnp+'.png',stack,cmap='coolwarm')
+	plt.imsave(fnp+'_stack.png',stack,cmap='coolwarm')
 	fabio.dtrekimage.DtrekImage(data=stack,header=img.header).write(fnp+'.img')
