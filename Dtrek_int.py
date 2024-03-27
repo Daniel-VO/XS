@@ -24,13 +24,20 @@ def profile(data,qlim,azilim,rbins,abins):
 def take(headerkey,indices):
 	return np.fromstring(img.header[headerkey],sep=' ')[indices]
 
-
 for f in glob.glob('*.img'):
+	filename=os.path.splitext(f)[0].split('_image')[0]
 	img=fabio.open(f)
 	# ~ print(img.header,file=open('header','w'));a=b
 	detdist=take('PXD_GONIO_VALUES',-1);detsizeX,detsizeY=take('PXD_DETECTOR_SIZE',[0,1]);beamcenterX,beamcenterY,pxsizeX,pxsizeY=take('PXD_SPATIAL_DISTORTION_INFO',[0,1,2,3]);wavelength=take('SOURCE_WAVELENGTH',-1);omega,chi,phi=take('CRYSTAL_GONIO_VALUES',[0,1,2])
 
-	plt.imsave('stack.png',img.data,cmap='coolwarm')
+	if beamcenterX>1 and beamcenterY>1:
+		padx0=int((beamcenterX-img.shape[1]/2)*(np.sign(beamcenterX-img.shape[1]/2)+1))
+		pady0=int((beamcenterY-img.shape[0]/2)*(np.sign(beamcenterY-img.shape[0]/2)+1))
+		padx1=int((img.shape[1]/2-beamcenterX)*(np.sign(img.shape[1]/2-beamcenterX)+1))
+		pady1=int((img.shape[0]/2-beamcenterY)*(np.sign(img.shape[0]/2-beamcenterY)+1))
+		img.data=np.pad(img.data,((padx0,padx1),(pady0,pady1)))
+
+	plt.imsave(filename+'.png',img.data,cmap='coolwarm')
 
 	integrators=[]
 	# ~ integrators.append([img.data,(0,3),(-45,45),150,45])
@@ -57,7 +64,6 @@ for f in glob.glob('*.img'):
 			plt.xlabel(r'$\beta/^\circ$',fontsize=10);plt.ylabel(r'$q/\rm{\AA}^{-1}$',fontsize=10)
 
 		plt.legend(frameon=False,fontsize=8)
-
 		plt.tick_params(axis='both',pad=2,labelsize=8)
 		plt.tight_layout(pad=0.1)
 		plt.savefig(str(i[1:])+'.png',dpi=300)
@@ -66,14 +72,14 @@ for f in glob.glob('*.img'):
 	mpl.rc('text',usetex=True)
 	mpl.rc('text.latex',preamble=r'\usepackage[helvet]{sfmath}')
 	plt.subplot(projection='polar')
-	ylim=2.8
-	q0,azi0,q,azi,ints=profile(stack,(0,ylim),(-180,180),2,2);plt.ylim([None,ylim])
-	plt.pcolormesh(np.radians(azi0),q0,stack,cmap='coolwarm');plt.grid(True)
+	q0,azi0,q,azi,ints=profile(img.data,(0,np.inf),(-180,180),2,2);plt.ylim([None,np.max(q0)/2.3])
+	img.data[np.where(q0<np.max(q0)/18)]=0										####
+	plt.pcolormesh(np.radians(azi0),q0,img.data,cmap='coolwarm',vmax=np.quantile(img.data,1-1e-4));plt.grid(True)
 	for i in integrators:
 		q0,azi0,q,azi,ints=profile(i[0],i[1],i[2],i[3]+100,i[4]+100)
 		plt.contourf(np.radians(azi),q,np.ones(ints.shape),colors='k',alpha=0.1)
 	plt.xticks(plt.xticks()[0],[r'$'+str(np.degrees(ang))+'^\circ$' for ang in plt.xticks()[0]],fontsize=8)
 	plt.gca().set_rlabel_position(-90)
 	plt.tick_params(axis='both',pad=2,labelsize=8);plt.tight_layout(pad=0.1)
-	plt.savefig('intmap.png',dpi=300)
+	plt.savefig(filename+'_intmap.png',dpi=300)
 
