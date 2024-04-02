@@ -1,5 +1,5 @@
 """
-Created 27. March 2024 by Daniel Van Opdenbosch, Technical University of Munich
+Created 02. April 2024 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -25,7 +25,7 @@ def take(headerkey,indices):
 	return np.fromstring(img.header[headerkey],sep=' ')[indices]
 
 for f in glob.glob('*.img'):
-	filename=os.path.splitext(f)[0].split('_image')[0]
+	filename=os.path.splitext(f)[0].replace('_image','')
 	img=fabio.open(f)
 	# ~ print(img.header,file=open('header','w'));a=b
 	detdist=take('PXD_GONIO_VALUES',-1);detsizeX,detsizeY=take('PXD_DETECTOR_SIZE',[0,1]);beamcenterX,beamcenterY,pxsizeX,pxsizeY=take('PXD_SPATIAL_DISTORTION_INFO',[0,1,2,3]);wavelength=take('SOURCE_WAVELENGTH',-1);omega,chi,phi=take('CRYSTAL_GONIO_VALUES',[0,1,2])
@@ -36,8 +36,6 @@ for f in glob.glob('*.img'):
 		padx1=int((beamcenterX-img.shape[1]/2)*(np.sign(beamcenterX-img.shape[1]/2)+1))
 		pady1=int((beamcenterY-img.shape[0]/2)*(np.sign(beamcenterY-img.shape[0]/2)+1))
 		img.data=np.pad(img.data,((pady0,pady1),(padx0,padx1)))
-
-	print(beamcenterX,img.shape[1]/2,beamcenterY,img.shape[0]/2)
 
 	plt.imsave(filename+'.png',img.data,cmap='coolwarm')
 
