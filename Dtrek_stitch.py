@@ -6,10 +6,10 @@ This program is free software: you can redistribute it and/or modify it under th
 
 import os
 import glob
+import scipy
 import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-import scipy
 import fabio
 
 def take(headerkey,indices):
@@ -34,12 +34,12 @@ for fnp in filenamepatterns:
 		img.data=np.pad(img.data,((pady0,pady1),(padx0,padx1)))
 
 		fs=(img.shape[0]**2+img.shape[1]**2)**0.5
-		img.data=scipy.ndimage.rotate(img.data,-90-chi)
+		img.data=scipy.ndimage.rotate(img.data,chi)
 		img.data=img.data[:img.shape[0]//2*2,:img.shape[1]//2*2]
 		pady=int((fs-img.shape[0])/2);padx=int((fs-img.shape[1])/2)
 		img.data=np.pad(img.data,((pady,pady),(padx,padx)))
 		stack.append(img.data)
 
-	stack=np.max(stack,axis=0)/np.max(stack)
+	stack=np.max(stack,axis=0)
 	plt.imsave(fnp+'_stack.png',stack,cmap='coolwarm')
 	fabio.dtrekimage.DtrekImage(data=stack.astype(np.float32),header=img.header).write(fnp+'.img')

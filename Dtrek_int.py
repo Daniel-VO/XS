@@ -6,6 +6,7 @@ This program is free software: you can redistribute it and/or modify it under th
 
 import os
 import glob
+import scipy
 import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -24,9 +25,15 @@ def profile(data,qlim,azilim,rbins,abins):
 def take(headerkey,indices):
 	return np.fromstring(img.header[headerkey],sep=' ')[indices]
 
+def get_inv(argsort):
+	argsort_inv=np.arange(len(argsort))
+	argsort_inv[argsort]=argsort_inv.copy()
+	return argsort_inv
+
 for f in glob.glob('*.img'):
 	filename=os.path.splitext(f)[0].replace('_image','')
 	img=fabio.open(f)
+	img.data=img.data.astype(np.float32)
 	# ~ print(img.header,file=open('header','w'));a=b
 	detdist=take('PXD_GONIO_VALUES',-1);detsizeX,detsizeY=take('PXD_DETECTOR_SIZE',[0,1]);beamcenterX,beamcenterY,pxsizeX,pxsizeY=take('PXD_SPATIAL_DISTORTION_INFO',[0,1,2,3]);wavelength=take('SOURCE_WAVELENGTH',-1);omega,chi,phi=take('CRYSTAL_GONIO_VALUES',[0,1,2])
 
@@ -36,6 +43,10 @@ for f in glob.glob('*.img'):
 		padx1=int((beamcenterX-img.shape[1]/2)*(np.sign(beamcenterX-img.shape[1]/2)+1))
 		pady1=int((beamcenterY-img.shape[0]/2)*(np.sign(beamcenterY-img.shape[0]/2)+1))
 		img.data=np.pad(img.data,((pady0,pady1),(padx0,padx1)))
+
+	q0,azi0,q,azi,ints=profile(img.data,(0,np.inf),(-180,180),2,2)
+	argsort=np.argsort(q0.flatten())
+	img.data-=scipy.ndimage.median_filter(img.data.flatten()[argsort],size=len(q0.flatten())//500)[get_inv(argsort)].reshape(img.data.shape)
 
 	plt.imsave(filename+'.png',img.data,cmap='coolwarm')
 
@@ -74,7 +85,8 @@ for f in glob.glob('*.img'):
 	plt.subplot(projection='polar')
 	q0,azi0,q,azi,ints=profile(img.data,(0,np.inf),(-180,180),2,2)
 	img.data[np.where(q0<np.max(q0)/18)]=0;plt.ylim([None,np.max(q0)/2.3])		####
-	plt.pcolormesh(np.radians(azi0),q0,img.data,cmap='coolwarm',vmax=np.quantile(img.data,1-1e-4));plt.grid(True)
+	plt.pcolormesh(np.radians(azi0),q0,img.data,cmap='coolwarm',vmin=np.quantile(img.data,0.5),
+																vmax=np.quantile(img.data,1-1e-4));plt.grid(True)
 	for i in integrators:
 		q0,azi0,q,azi,ints=profile(i[0],i[1],i[2],i[3]+100,i[4]+100)
 		plt.contourf(np.radians(azi),q,np.ones(ints.shape),colors='k',alpha=0.1)
