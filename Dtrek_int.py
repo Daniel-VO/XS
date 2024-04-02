@@ -25,11 +25,6 @@ def profile(data,qlim,azilim,rbins,abins):
 def take(headerkey,indices):
 	return np.fromstring(img.header[headerkey],sep=' ')[indices]
 
-def get_inv(argsort):
-	argsort_inv=np.arange(len(argsort))
-	argsort_inv[argsort]=argsort_inv.copy()
-	return argsort_inv
-
 for f in glob.glob('*.img'):
 	filename=os.path.splitext(f)[0].replace('_image','')
 	img=fabio.open(f)
@@ -45,8 +40,8 @@ for f in glob.glob('*.img'):
 		img.data=np.pad(img.data,((pady0,pady1),(padx0,padx1)))
 
 	q0,azi0,q,azi,ints=profile(img.data,(0,np.inf),(-180,180),2,2)
-	argsort=np.argsort(q0.flatten())
-	img.data-=scipy.ndimage.median_filter(img.data.flatten()[argsort],size=len(q0.flatten())//500)[get_inv(argsort)].reshape(img.data.shape)
+	argsort=np.argsort(q0.flatten());argsort_inv=np.arange(len(argsort));argsort_inv[argsort]=argsort_inv.copy()
+	img.data-=scipy.ndimage.median_filter(img.data.flatten()[argsort],size=len(q0.flatten())//500)[argsort_inv].reshape(img.data.shape)
 
 	plt.imsave(filename+'.png',img.data,cmap='coolwarm')
 
