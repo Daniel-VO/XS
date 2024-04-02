@@ -25,10 +25,10 @@ def profile(data,qlim,azilim,rbins,abins):
 def take(headerkey,indices):
 	return np.fromstring(img.header[headerkey],sep=' ')[indices]
 
-for f in glob.glob('*.img'):
+for f in glob.glob('alle.img'):
 	filename=os.path.splitext(f)[0].replace('_image','')
 	img=fabio.open(f)
-	img.data=img.data.astype(np.float32)
+	img.data=img.data.astype(np.float32)/np.max(img.data)
 	# ~ print(img.header,file=open('header','w'));a=b
 	detdist=take('PXD_GONIO_VALUES',-1);detsizeX,detsizeY=take('PXD_DETECTOR_SIZE',[0,1]);beamcenterX,beamcenterY,pxsizeX,pxsizeY=take('PXD_SPATIAL_DISTORTION_INFO',[0,1,2,3]);wavelength=take('SOURCE_WAVELENGTH',-1);omega,chi,phi=take('CRYSTAL_GONIO_VALUES',[0,1,2])
 
@@ -46,7 +46,7 @@ for f in glob.glob('*.img'):
 	plt.imsave(filename+'.png',img.data,cmap='coolwarm')
 
 	integrators=[]
-	# ~ integrators.append([img.data,(0,3),(-45,45),150,45])
+	integrators.append([img.data,(0.1,0.7),(-180,180),120,1])
 	# ~ integrators.append([img.data,(1,1.2),(-45,45),1,90])
 	# ~ integrators.append([img.data,(0.4,2.7),(-30,30),115,1])
 
@@ -84,7 +84,8 @@ for f in glob.glob('*.img'):
 																vmax=np.quantile(img.data,1-1e-4));plt.grid(True)
 	for i in integrators:
 		q0,azi0,q,azi,ints=profile(i[0],i[1],i[2],i[3]+100,i[4]+100)
-		plt.contourf(np.radians(azi),q,np.ones(ints.shape),colors='k',alpha=0.1)
+		if abs(i[2][1]-i[2][0])!=360:
+			plt.contourf(np.radians(azi),q,np.ones(ints.shape),colors='k',alpha=0.1)
 	plt.xticks(plt.xticks()[0],[r'$'+str(np.degrees(ang))+'^\circ$' for ang in plt.xticks()[0]],fontsize=8)
 	plt.gca().set_rlabel_position(-90)
 	plt.tick_params(axis='both',pad=2,labelsize=8);plt.tight_layout(pad=0.1)

@@ -40,6 +40,7 @@ for fnp in filenamepatterns:
 		img.data=np.pad(img.data,((pady,pady),(padx,padx)))
 		stack.append(img.data)
 
+	fnp=fnp.replace('*','alle')
 	stack=np.max(stack,axis=0)
 	plt.imsave(fnp+'_stack.png',stack,cmap='coolwarm')
 	fabio.dtrekimage.DtrekImage(data=stack.astype(np.float32),header=img.header).write(fnp+'.img')
