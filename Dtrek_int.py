@@ -1,5 +1,5 @@
 """
-Created 02. April 2024 by Daniel Van Opdenbosch, Technical University of Munich
+Created 05. April 2024 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -46,7 +46,7 @@ for f in glob.glob('alle.img'):
 	plt.imsave(filename+'.png',img.data,cmap='coolwarm')
 
 	integrators=[]
-	integrators.append([img.data,(0.1,0.7),(-180,180),120,1])
+	# ~ integrators.append([img.data,(0.1,0.7),(-180,180),120,1])
 	# ~ integrators.append([img.data,(1,1.2),(-45,45),1,90])
 	# ~ integrators.append([img.data,(0.4,2.7),(-30,30),115,1])
 
