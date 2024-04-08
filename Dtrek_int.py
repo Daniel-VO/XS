@@ -1,5 +1,5 @@
 """
-Created 05. April 2024 by Daniel Van Opdenbosch, Technical University of Munich
+Created 08. April 2024 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -10,9 +10,7 @@ import scipy
 import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-import fabio,pyFAI
-from pyFAI.azimuthalIntegrator import AzimuthalIntegrator
-from pyFAI.io import DefaultAiWriter
+import fabio
 
 def profile(data,qlim,azilim,rbins,abins):
 	y,x=np.indices((data.shape))
@@ -22,7 +20,14 @@ def profile(data,qlim,azilim,rbins,abins):
 	ints,q,azi=np.histogram2d(q0[args].flatten(),azi0[args].flatten(),weights=data[args].flatten(),bins=(rbins,abins))
 	return q0,azi0,q[1:],azi[1:],ints
 
-def take(headerkey,indices):
+def center_pad(img,beamcenterX,beamcenterY):
+		padx0=int((img.shape[1]/2-beamcenterX)*(np.sign(img.shape[1]/2-beamcenterX)+1))
+		pady0=int((img.shape[0]/2-beamcenterY)*(np.sign(img.shape[0]/2-beamcenterY)+1))
+		padx1=int((beamcenterX-img.shape[1]/2)*(np.sign(beamcenterX-img.shape[1]/2)+1))
+		pady1=int((beamcenterY-img.shape[0]/2)*(np.sign(beamcenterY-img.shape[0]/2)+1))
+		return np.pad(img.data,((pady0,pady1),(padx0,padx1)))
+
+def take(img,headerkey,indices):
 	return np.fromstring(img.header[headerkey],sep=' ')[indices]
 
 for f in glob.glob('alle.img'):
@@ -30,14 +35,10 @@ for f in glob.glob('alle.img'):
 	img=fabio.open(f)
 	img.data=img.data.astype(np.float32)/np.max(img.data)
 	# ~ print(img.header,file=open('header','w'));a=b
-	detdist=take('PXD_GONIO_VALUES',-1);detsizeX,detsizeY=take('PXD_DETECTOR_SIZE',[0,1]);beamcenterX,beamcenterY,pxsizeX,pxsizeY=take('PXD_SPATIAL_DISTORTION_INFO',[0,1,2,3]);wavelength=take('SOURCE_WAVELENGTH',-1);omega,chi,phi=take('CRYSTAL_GONIO_VALUES',[0,1,2])
+	detdist=take(img,'PXD_GONIO_VALUES',-1);detsizeX,detsizeY=take(img,'PXD_DETECTOR_SIZE',[0,1]);beamcenterX,beamcenterY,pxsizeX,pxsizeY=take(img,'PXD_SPATIAL_DISTORTION_INFO',[0,1,2,3]);wavelength=take(img,'SOURCE_WAVELENGTH',-1);omega,chi,phi=take(img,'CRYSTAL_GONIO_VALUES',[0,1,2])
 
 	if beamcenterX>1 and beamcenterY>1:
-		padx0=int((img.shape[1]/2-beamcenterX)*(np.sign(img.shape[1]/2-beamcenterX)+1))
-		pady0=int((img.shape[0]/2-beamcenterY)*(np.sign(img.shape[0]/2-beamcenterY)+1))
-		padx1=int((beamcenterX-img.shape[1]/2)*(np.sign(beamcenterX-img.shape[1]/2)+1))
-		pady1=int((beamcenterY-img.shape[0]/2)*(np.sign(beamcenterY-img.shape[0]/2)+1))
-		img.data=np.pad(img.data,((pady0,pady1),(padx0,padx1)))
+		img.data=center_pad(img,beamcenterX,beamcenterY)
 
 	q0,azi0,q,azi,ints=profile(img.data,(0,np.inf),(-180,180),2,2)
 	argsort=np.argsort(q0.flatten());argsort_inv=np.arange(len(argsort));argsort_inv[argsort]=argsort_inv.copy()
@@ -79,7 +80,7 @@ for f in glob.glob('alle.img'):
 	mpl.rc('text.latex',preamble=r'\usepackage[helvet]{sfmath}')
 	plt.subplot(projection='polar')
 	q0,azi0,q,azi,ints=profile(img.data,(0,np.inf),(-180,180),2,2)
-	img.data[np.where(q0<0.1)]=0;plt.ylim([None,0.8])							####	np.max(q0)/(2**2+1**2)**0.5
+	img.data[np.where(q0<0.078)]=0;plt.ylim([None,0.67])							####	np.max(q0)/(2**2+1**2)**0.5
 	plt.pcolormesh(np.radians(azi0),q0,img.data,cmap='coolwarm',vmin=np.quantile(img.data,0.5),
 																vmax=np.quantile(img.data,1-1e-4));plt.grid(True)
 	for i in integrators:
