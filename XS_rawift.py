@@ -1,5 +1,5 @@
 """
-Created 20. March 2024 by Daniel Van Opdenbosch, Technical University of Munich
+Created 24. April 2024 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -24,9 +24,6 @@ for r in ranges:
 
 		q,yobs=q[np.argmax(yobs):],yobs[np.argmax(yobs):]						####
 
-		plt.close('all')
-		plt.plot(q,yobs)
-
 		args=np.where((q>=r[0])&(q<=r[1]))										####
 		profile=raw.make_profile(q[args],yobs[args],np.ones(len(q[args])),filename)
 		ift=raw.bift(profile)
@@ -34,6 +31,8 @@ for r in ranges:
 		profile=raw.make_profile(q,yobs,np.ones(len(q)),filename)
 		guinier=raw.auto_guinier(profile)
 
+		plt.close('all')
+		plt.plot(q,yobs)
 		plt.plot(ift[0].q_orig,ift[0].i_orig)
 		plt.plot(ift[0].q_orig,ift[0].i_fit)
 		plt.xscale('log');plt.yscale('log');plt.xlim([1e-4,None])
