@@ -22,11 +22,11 @@ def pad(q):
 def fitfunc(params):
 	prm=params.valuesdict()
 	global res
-	res=yobsS-SAXSres.apply(call_kernel(SAXSkernel,prm))[50:-50]
-	if os.path.isfile(f.replace('_SAXS','_USAXS')):
+	res=((yobsS-SAXSres.apply(call_kernel(SAXSkernel,prm))[50:-50])*qS**2)
+	if os.path.isfile(f.replace('_RSAXS','_USAXS')):
 		prm['scale']=prm['Uscale'];prm['background']=prm['Ubackground']
-		res=np.append(yobsU-USAXSres.apply(call_kernel(USAXSkernel,prm))[50:-50],res)
-	return abs(np.nan_to_num(res))**0.5
+		res=np.append(((yobsU-USAXSres.apply(call_kernel(USAXSkernel,prm))[50:-50])*qU**2),res)
+	return np.nan_to_num(res)
 
 model=load_model(str(sys.argv[1]))
 params=lm.Parameters()
