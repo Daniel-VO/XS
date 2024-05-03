@@ -1,5 +1,5 @@
 """
-Created 03. January 2023 by Daniel Van Opdenbosch, Technical University of Munich
+Created 03. Mai 2024 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -9,7 +9,7 @@ import scipy
 import numpy as np
 import matplotlib.pyplot as plt
 
-chi,phi,twotheta,yobs=np.load('data.npy')
+chi,phi,twotheta,yobs=np.load('RSS.npy')
 chi,phi,twotheta=np.radians([chi,phi,twotheta])
 
 Pol=1+np.cos(twotheta)**2

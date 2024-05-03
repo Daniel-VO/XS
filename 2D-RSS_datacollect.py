@@ -1,5 +1,5 @@
 """
-Created 03. January 2023 by Daniel Van Opdenbosch, Technical University of Munich
+Created 03. Mai 2024 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -29,7 +29,7 @@ def collect(f):
 	return chi.flatten(),phi.flatten(),twotheta.flatten(),yobs.flatten()
 
 chi,phi,twotheta,yobs=np.concatenate(ray.get([collect.remote(f) for f in glob.glob('*.ras')]),axis=1)
-np.save('data.npy',[chi,phi,twotheta,yobs])
+np.save('RSS.npy',[chi,phi,twotheta,yobs])
 
 yobs,twotheta=np.histogram(twotheta,weights=yobs/np.sin(np.radians(twotheta)/2),bins=np.unique(twotheta))
 np.savetxt('ttints.xy',np.array([twotheta[1:],yobs]).transpose(),fmt='%.6f')
