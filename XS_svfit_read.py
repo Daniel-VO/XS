@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 
 data=np.load(str(sys.argv[1])+'.npy',allow_pickle=True)
 
-fnames=[d[0] for d in data]
+fnames=np.array([d[0] for d in data])
 names=[]
 values=[]
 stderrs=[]
@@ -26,7 +26,9 @@ stderrs=np.array(stderrs).transpose()
 
 for i,valuei in enumerate(values):
 	plt.close('all')
-	plt.errorbar(np.arange(len(valuei)),values[i])#,yerr=stderrs[i])
+	argsort=np.argsort(fnames)
+	plt.errorbar(fnames[argsort],values[i][argsort])#,yerr=stderrs[i])
+	plt.setp(plt.gca().xaxis.get_majorticklabels(),rotation=45,ha='right',rotation_mode='anchor')
 	plt.savefig(str(sys.argv[1])+'_'+names[i]+'.png')
 
 plt.close('all')
