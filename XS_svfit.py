@@ -1,10 +1,11 @@
 """
-Created 08. March 2024 by Daniel Van Opdenbosch, Technical University of Munich
+Created 06. May 2024 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
 
 import os
+import ray
 import sys
 import glob
 import lmfit as lm
@@ -22,10 +23,10 @@ def pad(q):
 def fitfunc(params):
 	prm=params.valuesdict()
 	global res
-	res=((yobsS-SAXSres.apply(call_kernel(SAXSkernel,prm))[50:-50])*qS**2)
+	res=((yobsS-SAXSres.apply(call_kernel(SAXSkernel,prm))[50:-50])*qS)
 	if os.path.isfile(f.replace('_RSAXS','_USAXS')):
 		prm['scale']=prm['Uscale'];prm['background']=prm['Ubackground']
-		res=np.append(((yobsU-USAXSres.apply(call_kernel(USAXSkernel,prm))[50:-50])*qU**2),res)
+		res=np.append(((yobsU-USAXSres.apply(call_kernel(USAXSkernel,prm))[50:-50])*qU),res)
 	return np.nan_to_num(res)
 
 model=load_model(str(sys.argv[1]))
@@ -43,10 +44,11 @@ else:
 		params.add(item[0],item[1],min=0)
 
 os.system('mv '+model.info.id+'.log '+model.info.id+'.alt')
-logfile=open(model.info.id+'.log','a')
-res_collect=0
-for f in glob.glob('*_SAXS*.dat'):
-	filename=f.split('_SAXS')[0]
+
+@ray.remote
+def fit(g):
+	filename=g.split('_SAXS')[0]
+	global f,qS,yobsS,SAXSres,SAXSkernel;f=g
 	qS,yobsS=np.genfromtxt(f,unpack=True)
 	qy_widthS=float(open(f).readlines()[0].split('=')[-1])
 
@@ -54,6 +56,7 @@ for f in glob.glob('*_SAXS*.dat'):
 
 	if os.path.isfile(f.replace('_SAXS','_USAXS')):
 		params.add('Uscale',params.valuesdict()['scale']/10,min=0);params.add('Ubackground',0,min=0)
+		global qU,yobsU,USAXSres,USAXSkernel
 		qU,yobsU=np.genfromtxt(f.replace('_SAXS','_USAXS'),unpack=True)
 		qy_widthU=float(open(f.replace('_SAXS','_USAXS')).readlines()[0].split('=')[-1])
 
@@ -71,7 +74,6 @@ for f in glob.glob('*_SAXS*.dat'):
 	print(filename,sys.argv[1])
 	result.params.pretty_print()
 	prm=result.params.valuesdict()
-	res_collect+=np.sum(res)
 
 	plt.close('all')
 	mpl.rc('text',usetex=True)
@@ -94,16 +96,14 @@ for f in glob.glob('*_SAXS*.dat'):
 	plt.tight_layout(pad=0.1)
 	plt.savefig(filename+'_'+model.info.id+'.png',dpi=300)
 
-	logfile.write(filename+' ')
-	for param in result.params.values():
-		logfile.write(str((param.name,'=',param.value,'+-',param.stderr)))
-	logfile.write('\n')
-
 	# ~ plt.close('all')
 	# ~ plt.plot(qU,res[:len(qU)])
 	# ~ plt.plot(qS,res[len(qU):])
 	# ~ plt.xscale('log')
 	# ~ plt.savefig(filename+'_'+model.info.id+'_res.png',dpi=300)
 
-logfile.write(str(res_collect))
+	print(filename,[str((param.name,'=',param.value,'+-',param.stderr)) for param in result.params.values()],file=open(model.info.id+'.log','a'))
 
+	return filename,result
+
+np.save(model.info.id+'.npy',ray.get([fit.remote(g) for g in glob.glob('*_SAXS*.dat')]))
