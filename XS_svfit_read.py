@@ -1,5 +1,5 @@
 """
-Created 07. May 2024 by Daniel Van Opdenbosch, Technical University of Munich
+Created 13. May 2024 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -12,11 +12,11 @@ import matplotlib.pyplot as plt
 
 data=np.load(str(sys.argv[1])+'.npy',allow_pickle=True)
 
-fnames=np.array([d[0] for d in data])
+fnames=data[:,0]
 names=[]
 values=[]
 stderrs=[]
-for result in [d[1] for d in data]:
+for result in data[:,1]:
 	names.append([param.name for param in result.params.values()])
 	values.append([param.value for param in result.params.values()])
 	stderrs.append([param.stderr for param in result.params.values()])
