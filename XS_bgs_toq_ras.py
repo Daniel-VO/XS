@@ -1,5 +1,5 @@
 """
-Created 19. March 2024 by Daniel Van Opdenbosch, Technical University of Munich
+Created 13. May 2024 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -25,8 +25,8 @@ paths.append('')
 
 for p in paths:
 	os.system('rm '+p+'*.dat '+p+'*.png')
-	for s in ['*_USAXS','*_SAXS','*_TXRD']:
-		BGfiles=glob.glob(p+s+'*BG.ras')
+	for s in ['*_USAXS','*_SAXS','*_TXRD','*_RSAXS']:
+		BGfiles=glob.glob(p+s+'*_BG.ras')
 
 		if len(BGfiles)>1:
 			print('Warnung: Mehr als ein Untergrund!')
@@ -39,14 +39,15 @@ for p in paths:
 				argsgauss=np.where((qbg>=min(qbg))&(qbg<=-min(qbg)))
 				popt,pcov=scipy.optimize.curve_fit(gaussian,qbg[argsgauss],ybg[argsgauss],p0=[max(ybg),0,1e-4])
 				HWHM=(2*np.log(2))**0.5*popt[-1]								#HWHM
+			elif s=='*_RSAXS':
+				HWHM=qbg[np.where(ybg<max(ybg)/2)[0][0]]
 			else:
 				HWHM=0
 			print('qy_width = '+str(HWHM)+' A^-1')
 			bg=scipy.interpolate.interp1d(qbg,ybg)								#bgint
 
-		for f in glob.glob('[!BG]'+p+s+'.ras'):
+		for f in glob.glob(p+s+'[!_BG].ras'):
 			filename=os.path.splitext(f)[0]
-			print(filename)
 			tt,yobs,eps=np.genfromtxt((i.replace('*','#') for i in open(f)),unpack=True)
 			q=toq(tt)															#to q
 			q=zdc(q,yobs)														#zero drift correction
@@ -66,7 +67,7 @@ for p in paths:
 			if len(BGfiles)==1:
 				plt.plot(q,yobs+ybg);plt.plot(q,ybg)
 			plt.plot(q,yobs);plt.plot(q,yobs)
-			plt.xscale('log'),plt.yscale('log'),plt.xlim([[1e-4,1e-3,1e-2][int(np.where(np.array(['*_USAXS','*_SAXS','*_TXRD'])==s)[0][0])],None]),plt.ylim([None,2*max(yobs)])
+			plt.xscale('log'),plt.yscale('log'),plt.xlim([[1e-4,1e-3,1e-2,1e-3][int(np.where(np.array(['*_USAXS','*_SAXS','*_TXRD','*_RSAXS'])==s)[0][0])],None]),plt.ylim([None,2*max(yobs)])
 			plt.savefig(filename+'.png')
 
 			with open(filename+'_bgs_toq.dat','a') as d:
