@@ -46,7 +46,7 @@ for p in paths:
 			print('qy_width = '+str(HWHM)+' A^-1')
 			bg=scipy.interpolate.interp1d(qbg,ybg)								#bgint
 
-		for f in glob.glob('[!_BG]'+p+s+'.ras'):
+		for f in glob.glob(p+s+'.ras'):
 			filename=os.path.splitext(f)[0]
 			tt,yobs,eps=np.genfromtxt((i.replace('*','#') for i in open(f)),unpack=True)
 			q=toq(tt)															#to q
