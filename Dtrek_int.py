@@ -58,6 +58,8 @@ for f in glob.glob('*.img'):
 		plt.figure(figsize=(7.5/2.54,5.3/2.54))
 
 		q0,azi0,q,azi,ints=profile(i[0],i[1],i[2],i[3],i[4])
+		if np.any(ints<0):
+			ints-=np.min(ints)
 		qlabel=r'$q/\rm{\AA}^{-1}:\rm{'+str(i[1])[1:-1]+'}$';betalabel=r'$\beta/^\circ:\rm{'+str(i[2])[1:-1]+'}$'
 
 		if i[3]==1:
