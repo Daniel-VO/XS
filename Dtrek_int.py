@@ -75,7 +75,7 @@ for f in glob.glob('*.img'):
 		plt.legend(frameon=False,fontsize=8)
 		plt.tick_params(axis='both',pad=2,labelsize=8)
 		plt.tight_layout(pad=0.1)
-		plt.savefig(str(i[1:])+'.png',dpi=300)
+		plt.savefig(filename+str(i[1:])+'.png',dpi=300)
 
 	plt.close('all')
 	mpl.rc('text',usetex=True)
