@@ -63,9 +63,11 @@ for f in glob.glob('*.img'):
 		if i[3]==1:
 			plt.plot(azi,ints.flatten(),linewidth=1,label=qlabel)
 			plt.xlabel(r'$\beta/^\circ$',fontsize=10);plt.ylabel(r'$I/1$',fontsize=10)
+			np.savetxt(filename+str(i[1:])+'_radi.dat',np.transpose([azi,ints.flatten()]))
 		elif i[4]==1:
 			plt.plot(q,ints.flatten(),linewidth=1,label=betalabel)
 			plt.xlabel(r'$q/\rm{\AA}^{-1}$',fontsize=10);plt.ylabel(r'$I/1$',fontsize=10)
+			np.savetxt(filename+str(i[1:])+'_azi.dat',np.transpose([q,ints.flatten()]))
 		else:
 			plt.contourf(azi,q,ints,cmap='coolwarm')
 			plt.xlabel(r'$\beta/^\circ$',fontsize=10);plt.ylabel(r'$q/\rm{\AA}^{-1}$',fontsize=10)
