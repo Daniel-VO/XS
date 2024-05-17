@@ -1,5 +1,5 @@
 """
-Created 08. April 2024 by Daniel Van Opdenbosch, Technical University of Munich
+Created 17. May 2024 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -85,7 +85,7 @@ for f in glob.glob('*.img'):
 																vmax=np.quantile(img.data,1-1e-4));plt.grid(True)
 	for i in integrators:
 		q0,azi0,q,azi,ints=profile(i[0],i[1],i[2],i[3]+100,i[4]+100)
-		if abs(i[2][1]-i[2][0])!=360:
+		if abs(i[2][1]-i[2][0])!=360 or i[3]==1:
 			plt.contourf(np.radians(azi),q,np.ones(ints.shape),colors='k',alpha=0.1)
 	plt.xticks(plt.xticks()[0],[r'$'+str(np.degrees(ang))+'^\circ$' for ang in plt.xticks()[0]],fontsize=8)
 	plt.gca().set_rlabel_position(-90)
