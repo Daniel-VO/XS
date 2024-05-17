@@ -30,7 +30,7 @@ def center_pad(img,beamcenterX,beamcenterY):
 def take(img,headerkey,indices):
 	return np.fromstring(img.header[headerkey],sep=' ')[indices]
 
-for f in glob.glob('alle.img'):
+for f in glob.glob('*.img'):
 	filename=os.path.splitext(f)[0].replace('_image','')
 	img=fabio.open(f)
 	img.data=img.data.astype(np.float32)/np.max(img.data)
@@ -80,7 +80,7 @@ for f in glob.glob('alle.img'):
 	mpl.rc('text.latex',preamble=r'\usepackage[helvet]{sfmath}')
 	plt.subplot(projection='polar')
 	q0,azi0,q,azi,ints=profile(img.data,(0,np.inf),(-180,180),2,2)
-	img.data[np.where(q0<0.078)]=0;plt.ylim([None,0.67])							####	np.max(q0)/(2**2+1**2)**0.5
+	img.data[np.where(q0<0.078)]=0;plt.ylim([None,np.max(q0)/(2**2+1**2)**0.5])		####
 	plt.pcolormesh(np.radians(azi0),q0,img.data,cmap='coolwarm',vmin=np.quantile(img.data,0.5),
 																vmax=np.quantile(img.data,1-1e-4));plt.grid(True)
 	for i in integrators:
