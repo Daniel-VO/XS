@@ -17,7 +17,7 @@ def fitfunc(params):
 
 os.system('mv OF.log OF.alt')
 
-Orientierungen=[0,1]
+Orientierungen=np.arange(2)
 
 for f in glob.glob('*radi.dat'):
 	filename=os.path.splitext(f)[0]
