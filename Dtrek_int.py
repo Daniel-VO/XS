@@ -48,7 +48,7 @@ for f in glob.glob('*.img'):
 		mpl.rc('text',usetex=True);mpl.rc('text.latex',preamble=r'\usepackage[helvet]{sfmath}')
 		q,yobs=ai.integrate1d(img.data,npt=npts,azimuth_range=p1_range)
 		plt.plot(q,yobs/max(yobs))
-		plt.figtext(0.98,0.98,r'$q_z/q='+str((np.sin(np.radians(p1_range[0])).round(2),np.sin(np.radians(p1_range[1])).round(2)))+'$',ha='right',va='top',fontsize=6)
+		plt.figtext(0.98,0.98,r'$\chi='+str((p1_range[0],p1_range[1]))+'$',ha='right',va='top',fontsize=6)
 		plt.xlabel(r'$q/\rm{nm}^{-1}$')
 		plt.ylabel(r'$I/1$')
 		plt.tick_params(axis='both',pad=2,labelsize=8)
