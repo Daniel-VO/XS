@@ -72,7 +72,8 @@ for f in glob.glob('*.img'):
 	plt.figure(figsize=(7.5/2.54,5.3/2.54))
 	mpl.rc('text',usetex=True);mpl.rc('text.latex',preamble=r'\usepackage[helvet]{sfmath}')
 	yobs,qxy,qz=pg.transform_reciprocal(img.data,npt=(npts,npts),method='bbox')
-	qxyg,qzg=np.meshgrid(qxy,qz);yobs[np.where(abs(qxyg)==np.min(abs(qxyg)))]=0
+	qxyg,qzg=np.meshgrid(qxy,qz);args=np.where(abs(qxyg)==np.min(abs(qxyg)))
+	yobs[args]=np.median([yobs[args[0],args[1]-1],yobs[args[0],args[1]+1]],axis=0)
 	plt.pcolormesh(qxy,qz,yobs,cmap='coolwarm')
 	plt.axis('equal')
 	plt.xlabel(r'$q_{xy}/\rm{nm}^{-1}$')
