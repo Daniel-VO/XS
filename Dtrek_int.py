@@ -1,5 +1,5 @@
 """
-Created 10. June 2024 by Daniel Van Opdenbosch, Technical University of Munich
+Created 14. June 2024 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -37,7 +37,7 @@ for f in glob.glob('*.img'):
 		unit_qoop=pyFAI.units.get_unit_fiber('qoop_A^-1',incident_angle=np.radians(omega),tilt_angle=np.radians(ta),sample_orientation=so)
 		units=(unit_qip,unit_qoop);method='no';npts=(img.shape[1]//2,img.shape[0]//2)
 	else:
-		units='q_A^-1';method='splitpixel';npts=(img.shape[1]//2,360)
+		units='2th_deg';method='splitpixel';npts=(img.shape[1]//2,360)
 
 	#2D
 	plt.close('all')
