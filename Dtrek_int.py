@@ -66,12 +66,12 @@ for f in glob.glob('*.img'):
 
 	if geom=='Faser':
 		rang=None
-		x,yobs=ai.integrate_fiber(img.data,output_unit=units[0],npt_output=npts[0],integrated_unit=units[1],npt_integrated=npts[1],integrated_unit_range=rang,correctSolidAngle=True,method=method)
+		x,yobs=ai.integrate_fiber(img.data,npt_output=npts[0],output_unit=units[0],integrated_unit=units[1],integrated_unit_range=rang,method=method,filename=filename+'_'+str(rang)+'.xy')
 		yobs[np.where(abs(x)==min(abs(x)))]=0
 		xlabel=label(str(units[0]));ylabel=r'$I/1$'
 	else:
-		rang=(-180,180)
-		x,yobs=ai.integrate1d(img.data,)
+		rang=None
+		x,yobs=ai.integrate1d(img.data,npt=npts[0],azimuth_range=rang,unit=units,method=method,filename=filename+'_'+str(rang)+'.xy')
 		xlabel=label(units);ylabel=r'$I/1$'
 
 	plt.plot(x,yobs,'k',linewidth=0.5)
