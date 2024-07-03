@@ -1,5 +1,5 @@
 """
-Created 14. June 2024 by Daniel Van Opdenbosch, Technical University of Munich
+Created 03. Juli 2024 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -32,25 +32,28 @@ for f in glob.glob('*.img'):
 	ai=pa.AzimuthalIntegrator(dist=detdist/1e3,poni1=beamcenterY*pxsizeY/1e3,poni2=beamcenterX*pxsizeX/1e3,pixel1=pxsizeY/1e3,pixel2=pxsizeX/1e3,wavelength=wavelength/1e10)
 
 	if geom=='Faser':
-		ta=0;so=1
+		ta=0;so=int(sys.argv[2])
 		unit_qip=pyFAI.units.get_unit_fiber('qip_A^-1',incident_angle=np.radians(omega),tilt_angle=np.radians(ta),sample_orientation=so)
 		unit_qoop=pyFAI.units.get_unit_fiber('qoop_A^-1',incident_angle=np.radians(omega),tilt_angle=np.radians(ta),sample_orientation=so)
 		units=(unit_qip,unit_qoop);method='no';npts=(img.shape[1]//2,img.shape[0]//2)
+		if so==2 or so==4:
+			npts=npts[::-1]
 	else:
 		units='2th_deg';method='splitpixel';npts=(img.shape[1]//2,360)
 
 	#2D
 	plt.close('all')
-	plt.figure(figsize=(7.5/2.54,5.3/2.54))
 	mpl.rc('text',usetex=True);mpl.rc('text.latex',preamble=r'\usepackage[helvet]{sfmath}')
-
 	yobs,x,y=ai.integrate2d(img.data,npts[0],npts[1],unit=units,method=method)
 
 	if geom=='Faser':
+		plt.figure(figsize=(5.3/2.54,5.3/2.54))
 		xg,yg=np.meshgrid(x,y);args=np.where(abs(xg)==np.min(abs(xg)))
 		yobs[args]=np.median([yobs[args[0],args[1]-1],yobs[args[0],args[1]+1]],axis=0)
 		xlabel=label(str(units[0]));ylabel=label(str(units[1]))
+		plt.gca().set_aspect('equal')
 	else:
+		plt.figure(figsize=(7.5/2.54,5.3/2.54))
 		xlabel=label(units);ylabel=r'$\chi/^\circ$'
 
 	plt.pcolormesh(x,y,yobs,cmap='coolwarm')
