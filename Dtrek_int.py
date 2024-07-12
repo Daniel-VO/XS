@@ -13,6 +13,7 @@ import scipy
 import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+import pybaselines as pb;bl=pb.api.Baseline()
 from pyFAI import azimuthalIntegrator as pa
 
 if len(sys.argv)>1:
@@ -42,14 +43,16 @@ for f in glob.glob('*.img'):
 		units='2th_deg';method='splitpixel';npts=(img.shape[1]//2,360)
 
 	#BGCORR
-	mfilt1d=ai.medfilt1d(img.data,npt_rad=npts[0],npt_azim=npts[1],unit=units,method=method,percentile=2)
-	p=np.polynomial.Chebyshev.fit(mfilt1d.radial,mfilt1d.intensity,8)
-	isotropic=ai.calcfrom1d(mfilt1d.radial,p(mfilt1d.radial),shape=img.shape,dim1_unit=mfilt1d.unit)
+	mfilt1d=ai.medfilt1d(img.data,npt_rad=npts[0],npt_azim=npts[1],unit='2th_deg',method=method,percentile=5)
+	baseline=bl.irsqr(mfilt1d.intensity,diff_order=2)[0]
+	isotropic=ai.calcfrom1d(mfilt1d.radial,baseline,shape=img.shape,dim1_unit=mfilt1d.unit)
 
 	plt.close('all')
-	int1d=ai.integrate1d(img.data,npt=npts[0],unit=units,method=method);plt.plot(int1d.radial,int1d.intensity)
-	int1d=ai.integrate1d(img.data-isotropic,npt=npts[0],unit=units,method=method);plt.plot(int1d.radial,int1d.intensity)
-	plt.plot(mfilt1d.radial,mfilt1d.intensity);plt.plot(mfilt1d.radial,p(mfilt1d.radial))
+	int1d=ai.integrate1d(img.data,npt=npts[0],unit='2th_deg',method=method);plt.plot(int1d.radial,int1d.intensity)
+	plt.plot(int1d.radial,int1d.intensity-baseline)
+	int1d=ai.integrate1d(img.data-isotropic,npt=npts[0],unit='2th_deg',method=method);plt.plot(int1d.radial,int1d.intensity,'k--')
+	plt.plot(mfilt1d.radial,mfilt1d.intensity)
+	plt.plot(mfilt1d.radial,baseline)
 	plt.savefig(filename+'_BG1d.png',dpi=300)
 
 	#2D
