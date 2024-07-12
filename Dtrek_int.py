@@ -1,5 +1,5 @@
 """
-Created 03. Juli 2024 by Daniel Van Opdenbosch, Technical University of Munich
+Created 12. Juli 2024 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -18,10 +18,10 @@ from pyFAI import azimuthalIntegrator as pa
 if len(sys.argv)>1:
 	geom=sys.argv[1]
 else:
-	geom=input('Geometrie [Faser/GISAXS/ ]: ')
+	geom=''
 
 def label(string):
-	return r'$'+string.replace('^-1','^{-1}').replace('_deg','/^\circ').replace('A',r'\rm{A}').replace('nm',r'\rm{nm}').replace('_','}/').replace('q','q_{').replace('th',r'\theta')+'$'
+	return r'$'+str(string).replace('^-1','^{-1}').replace('_deg','/^\circ').replace('A',r'\rm{A}').replace('nm',r'\rm{nm}').replace('_','}/').replace('q','q_{').replace('th',r'\theta').replace('chi',r'\chi')+'$'
 
 def take(img,headerkey,indices):
 	return np.fromstring(img.header[headerkey],sep=' ')[indices]
@@ -41,23 +41,33 @@ for f in glob.glob('*.img'):
 	else:
 		units='2th_deg';method='splitpixel';npts=(img.shape[1]//2,360)
 
+	#BGCORR
+	mfilt1d=ai.medfilt1d(img.data,npt_rad=npts[0],npt_azim=npts[1],unit=units,method=method,percentile=2)
+	p=np.polynomial.Chebyshev.fit(mfilt1d.radial,mfilt1d.intensity,8)
+	isotropic=ai.calcfrom1d(mfilt1d.radial,p(mfilt1d.radial),shape=img.shape,dim1_unit=mfilt1d.unit)
+
+	plt.close('all')
+	int1d=ai.integrate1d(img.data,npt=npts[0],unit=units,method=method);plt.plot(int1d.radial,int1d.intensity)
+	int1d=ai.integrate1d(img.data-isotropic,npt=npts[0],unit=units,method=method);plt.plot(int1d.radial,int1d.intensity)
+	plt.plot(mfilt1d.radial,mfilt1d.intensity);plt.plot(mfilt1d.radial,p(mfilt1d.radial))
+	plt.savefig(filename+'_BG1d.png',dpi=300)
+
 	#2D
 	plt.close('all')
 	mpl.rc('text',usetex=True);mpl.rc('text.latex',preamble=r'\usepackage[helvet]{sfmath}')
-	yobs,x,y=ai.integrate2d(img.data,npts[0],npts[1],unit=units,method=method)
+	int2d=ai.integrate2d(img.data,npts[0],npts[1],unit=units,method=method)
 
 	if geom=='Faser':
 		plt.figure(figsize=(5.3/2.54,5.3/2.54))
-		xg,yg=np.meshgrid(x,y);args=np.where(abs(xg)==np.min(abs(xg)))
-		yobs[args]=np.median([yobs[args[0],args[1]-1],yobs[args[0],args[1]+1]],axis=0)
-		xlabel=label(str(units[0]));ylabel=label(str(units[1]))
+		radg,azig=np.meshgrid(int2d.radial,int2d.azimuthal);args=np.where(abs(radg)==np.min(abs(radg)))
+		int2d.intensity[args]=np.median([int2d.intensity[args[0],args[1]-1],int2d.intensity[args[0],args[1]+1]],axis=0)
 		plt.gca().set_aspect('equal')
 	else:
 		plt.figure(figsize=(7.5/2.54,5.3/2.54))
-		xlabel=label(units);ylabel=r'$\chi/^\circ$'
 
-	plt.pcolormesh(x,y,yobs,cmap='coolwarm')
-	plt.xlabel(xlabel);plt.ylabel(ylabel)
+	plt.pcolormesh(int2d.radial,int2d.azimuthal,int2d.intensity,cmap='coolwarm')
+
+	plt.xlabel(label(int2d.radial_unit));plt.ylabel(label(int2d.azimuthal_unit))
 	plt.tick_params(axis='both',pad=2,labelsize=8)
 	plt.tight_layout(pad=0.1)
 	plt.savefig(filename+'.png',dpi=300)
@@ -69,17 +79,16 @@ for f in glob.glob('*.img'):
 
 	if geom=='Faser':
 		rang=None
-		x,yobs=ai.integrate_fiber(img.data,npt_output=npts[0],output_unit=units[0],integrated_unit=units[1],integrated_unit_range=rang,method=method,filename=filename+'_'+str(rang)+'.xy')
-		yobs[np.where(abs(x)==min(abs(x)))]=0
-		xlabel=label(str(units[0]));ylabel=r'$I/1$'
+		int1d=ai.integrate_fiber(img.data,npt_output=npts[0],output_unit=units[0],integrated_unit=units[1],integrated_unit_range=rang,method=method,filename=filename+'_'+str(rang)+'.xy')
+		int1d.intensity[np.where(abs(int1d.radial)==min(abs(int1d.radial)))]=0
 	else:
 		rang=None
-		x,yobs=ai.integrate1d(img.data,npt=npts[0],azimuth_range=rang,unit=units,method=method,filename=filename+'_'+str(rang)+'.xy')
-		xlabel=label(units);ylabel=r'$I/1$'
+		int1d=ai.integrate1d(img.data,npt=npts[0],azimuth_range=rang,unit=units,method=method,filename=filename+'_'+str(rang)+'.xy')
+		np.savetxt(filename+'_'+str(rang)+'_rad.xy',np.array(ai.integrate_radial(img.data,npt=min(npts),radial_range=rang,method=method)).transpose())
 
-	plt.plot(x,yobs,'k',linewidth=0.5)
+	plt.plot(int1d.radial,int1d.intensity,'k',linewidth=0.5)
 
-	plt.xlabel(xlabel);plt.ylabel(ylabel)
+	plt.xlabel(label(int1d.unit));plt.ylabel(r'$I/1$')
 	plt.tick_params(axis='both',pad=2,labelsize=8)
 	plt.tight_layout(pad=0.1)
 	plt.savefig(filename+'_'+str(rang)+'.png',dpi=300)
