@@ -55,28 +55,28 @@ for f in glob.glob('*.img'):
 	plt.plot(mfilt1d.radial,baseline)
 	plt.savefig(filename+'_BG1d.png',dpi=300)
 
-	#2D
-	plt.close('all')
-	mpl.rc('text',usetex=True);mpl.rc('text.latex',preamble=r'\usepackage[helvet]{sfmath}')
-	int2d=ai.integrate2d(img.data,npts[0],npts[1],unit=units,method=method)
-
-	if geom=='Faser':
-		plt.figure(figsize=(5.3/2.54,5.3/2.54))
-		radg,azig=np.meshgrid(int2d.radial,int2d.azimuthal);args=np.where(abs(radg)==np.min(abs(radg)))
-		int2d.intensity[args]=np.median([int2d.intensity[args[0],args[1]-1],int2d.intensity[args[0],args[1]+1]],axis=0)
-		plt.gca().set_aspect('equal')
-	else:
-		plt.figure(figsize=(7.5/2.54,5.3/2.54))
-
-	plt.pcolormesh(int2d.radial,int2d.azimuthal,int2d.intensity,cmap='coolwarm')
-
-	plt.xlabel(label(int2d.radial_unit));plt.ylabel(label(int2d.azimuthal_unit))
-	plt.tick_params(axis='both',pad=2,labelsize=8)
-	plt.tight_layout(pad=0.1)
-	plt.savefig(filename+'.png',dpi=300)
-
-	#1D
 	for bgs in ['','_bgs']:
+		#2D
+		plt.close('all')
+		mpl.rc('text',usetex=True);mpl.rc('text.latex',preamble=r'\usepackage[helvet]{sfmath}')
+		int2d=ai.integrate2d(img.data,npts[0],npts[1],unit=units,method=method)
+
+		if geom=='Faser':
+			plt.figure(figsize=(5.3/2.54,5.3/2.54))
+			radg,azig=np.meshgrid(int2d.radial,int2d.azimuthal);args=np.where(abs(radg)==np.min(abs(radg)))
+			int2d.intensity[args]=np.median([int2d.intensity[args[0],args[1]-1],int2d.intensity[args[0],args[1]+1]],axis=0)
+			plt.gca().set_aspect('equal')
+		else:
+			plt.figure(figsize=(7.5/2.54,5.3/2.54))
+
+		plt.pcolormesh(int2d.radial,int2d.azimuthal,int2d.intensity,cmap='coolwarm')
+
+		plt.xlabel(label(int2d.radial_unit));plt.ylabel(label(int2d.azimuthal_unit))
+		plt.tick_params(axis='both',pad=2,labelsize=8)
+		plt.tight_layout(pad=0.1)
+		plt.savefig(filename+bgs+'.png',dpi=300)
+
+		#1D
 		plt.close('all')
 		plt.figure(figsize=(7.5/2.54,5.3/2.54))
 		mpl.rc('text',usetex=True);mpl.rc('text.latex',preamble=r'\usepackage[helvet]{sfmath}')
