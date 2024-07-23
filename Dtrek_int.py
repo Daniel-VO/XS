@@ -1,5 +1,5 @@
 """
-Created 12. Juli 2024 by Daniel Van Opdenbosch, Technical University of Munich
+Created 23. Juli 2024 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -76,24 +76,26 @@ for f in glob.glob('*.img'):
 	plt.savefig(filename+'.png',dpi=300)
 
 	#1D
-	plt.close('all')
-	plt.figure(figsize=(7.5/2.54,5.3/2.54))
-	mpl.rc('text',usetex=True);mpl.rc('text.latex',preamble=r'\usepackage[helvet]{sfmath}')
+	for bgs in ['','_bgs']:
+		plt.close('all')
+		plt.figure(figsize=(7.5/2.54,5.3/2.54))
+		mpl.rc('text',usetex=True);mpl.rc('text.latex',preamble=r'\usepackage[helvet]{sfmath}')
 
-	if geom=='Faser':
 		rang=None
-		int1d=ai.integrate_fiber(img.data,npt_output=npts[0],output_unit=units[0],integrated_unit=units[1],integrated_unit_range=rang,method=method,filename=filename+'_'+str(rang)+'.xy')
-		int1d.intensity[np.where(abs(int1d.radial)==min(abs(int1d.radial)))]=0
-	else:
-		rang=None
-		int1d=ai.integrate1d(img.data,npt=npts[0],azimuth_range=rang,unit=units,method=method,filename=filename+'_'+str(rang)+'.xy')
-		np.savetxt(filename+'_'+str(rang)+'_rad.xy',np.array(ai.integrate_radial(img.data,npt=min(npts),radial_range=rang,method=method)).transpose())
+		if geom=='Faser':
+			int1d=ai.integrate_fiber(img.data,npt_output=npts[0],output_unit=units[0],integrated_unit=units[1],integrated_unit_range=None,method=method,filename=filename+'_'+str(rang)+bgs+'.xy')
+			int1d.intensity[np.where(abs(int1d.radial)==min(abs(int1d.radial)))]=0
+		else:
+			int1d=ai.integrate1d(img.data,npt=npts[0],azimuth_range=None,unit=units,method=method,filename=filename+'_'+str(rang)+bgs+'.xy')
+			np.savetxt(filename+'_'+str(rang)+bgs+'_rad.xy',np.array(ai.integrate_radial(img.data,npt=min(npts),radial_range=None,method=method)).transpose())
 
-	plt.plot(int1d.radial,int1d.intensity,'k',linewidth=0.5)
+		plt.plot(int1d.radial,int1d.intensity,'k',linewidth=0.5)
 
-	plt.xlabel(label(int1d.unit));plt.ylabel(r'$I/1$')
-	plt.tick_params(axis='both',pad=2,labelsize=8)
-	plt.tight_layout(pad=0.1)
-	plt.savefig(filename+'_'+str(rang)+'.png',dpi=300)
+		plt.xlabel(label(int1d.unit));plt.ylabel(r'$I/1$')
+		plt.tick_params(axis='both',pad=2,labelsize=8)
+		plt.tight_layout(pad=0.1)
+		plt.savefig(filename+'_'+str(rang)+bgs+'.png',dpi=300)
+
+		img.data=img.data-isotropic
 
 
