@@ -44,17 +44,18 @@ for f in glob.glob('*[!_BG_image].img'):
 		units='2th_deg';method='splitpixel';npts=(img.shape[1]//2,360)
 
 	#BGCORR
+	unit='2th_deg'
 	if len(glob.glob('*_BG_image.img'))>0:
 		bg=glob.glob('*_BG_image.img')[0];print('Untergrund: '+bg)
 		img.data=img.data.astype('float')-fabio.open(bg).data.astype('float')
-	mfilt1d=ai.medfilt1d(img.data,npt_rad=npts[0],npt_azim=npts[1],unit='2th_deg',method=method,percentile=5)
+	mfilt1d=ai.medfilt1d(img.data,npt_rad=npts[0],npt_azim=npts[1],unit=unit,method=method,percentile=5)
 	baseline=bl.irsqr(mfilt1d.intensity,diff_order=2)[0]
 	isotropic=ai.calcfrom1d(mfilt1d.radial,baseline,shape=img.shape,dim1_unit=mfilt1d.unit)
 
 	plt.close('all')
-	int1d=ai.integrate1d(img.data,npt=npts[0],unit='2th_deg',method=method);plt.plot(int1d.radial,int1d.intensity)
+	int1d=ai.integrate1d(img.data,npt=npts[0],unit=unit,method=method);plt.plot(int1d.radial,int1d.intensity)
 	plt.plot(int1d.radial,int1d.intensity-baseline)
-	int1d=ai.integrate1d(img.data-isotropic,npt=npts[0],unit='2th_deg',method=method);plt.plot(int1d.radial,int1d.intensity,'k--')
+	int1d=ai.integrate1d(img.data-isotropic,npt=npts[0],unit=unit,method=method);plt.plot(int1d.radial,int1d.intensity,'k--')
 	plt.plot(mfilt1d.radial,mfilt1d.intensity)
 	plt.plot(mfilt1d.radial,baseline)
 	if 'SAXS' in filename:
@@ -84,26 +85,26 @@ for f in glob.glob('*[!_BG_image].img'):
 		plt.savefig(filename+bgs+'.png',dpi=300)
 
 		#1D
-		plt.close('all')
-		plt.figure(figsize=(7.5/2.54,5.3/2.54))
-		mpl.rc('text',usetex=True);mpl.rc('text.latex',preamble=r'\usepackage[helvet]{sfmath}')
+		for rang in [None,]:
+			plt.close('all')
+			plt.figure(figsize=(7.5/2.54,5.3/2.54))
+			mpl.rc('text',usetex=True);mpl.rc('text.latex',preamble=r'\usepackage[helvet]{sfmath}')
 
-		rang=None
-		if geom=='Faser':
-			int1d=ai.integrate_fiber(img.data,npt_output=npts[0],output_unit=units[0],integrated_unit=units[1],integrated_unit_range=None,method=method,filename=filename+'_'+str(rang)+bgs+'.xy')
-			int1d.intensity[np.where(abs(int1d.radial)==min(abs(int1d.radial)))]=0
-		else:
-			int1d=ai.integrate1d(img.data,npt=npts[0],azimuth_range=None,unit=units,method=method,filename=filename+'_'+str(rang)+bgs+'.xy')
-			np.savetxt(filename+'_'+str(rang)+bgs+'_rad.xy',np.array(ai.integrate_radial(img.data,npt=min(npts),radial_range=None,method=method)).transpose())
+			if geom=='Faser':
+				int1d=ai.integrate_fiber(img.data,npt_output=npts[0],output_unit=units[0],integrated_unit=units[1],integrated_unit_range=rang,method=method,filename=filename+'_'+str(rang).replace(', ','-')+bgs+'.xy')
+				int1d.intensity[np.where(abs(int1d.radial)==min(abs(int1d.radial)))]=0
+			else:
+				int1d=ai.integrate1d(img.data,npt=npts[0],azimuth_range=rang,unit=units,method=method,filename=filename+'_'+str(rang).replace(', ','-')+bgs+'.xy')
+				np.savetxt(filename+'_'+str(rang).replace(', ','-')+bgs+'_rad.xy',np.array(ai.integrate_radial(img.data,npt=min(npts),radial_range=rang,method=method)).transpose())
 
-		plt.plot(int1d.radial,int1d.intensity,'k',linewidth=0.5)
+			plt.plot(int1d.radial,int1d.intensity,'k',linewidth=0.5)
 
-		if 'SAXS' in filename:
-			plt.yscale('log');plt.ylim([1e-1,None])
-		plt.xlabel(label(int1d.unit));plt.ylabel(r'$I/1$')
-		plt.tick_params(axis='both',pad=2,labelsize=8)
-		plt.tight_layout(pad=0.1)
-		plt.savefig(filename+'_'+str(rang)+bgs+'.png',dpi=300)
+			if 'SAXS' in filename:
+				plt.yscale('log');plt.ylim([1e-1,None])
+			plt.xlabel(label(int1d.unit));plt.ylabel(r'$I/1$')
+			plt.tick_params(axis='both',pad=2,labelsize=8)
+			plt.tight_layout(pad=0.1)
+			plt.savefig(filename+'_'+str(rang).replace(', ','-')+bgs+'.png',dpi=300)
 
 		img.data=img.data-isotropic
 
