@@ -20,13 +20,13 @@ os.system('mv results.log results.alt')
 for r in ranges:
 	for f in glob.glob('**/*.dat'):
 		filename=os.path.splitext(f)[0]+'_'+str(r)
-		if not os.path.exists(filename+'.ift'):
+		if not os.path.exists(filename+'.pdf'):
 			print(filename)
 			q,yobs=np.genfromtxt(f,unpack=True)
 
-			q,yobs=q[np.argmax(yobs):],yobs[np.argmax(yobs):]						####
+			q,yobs=q[np.argmax(yobs):],yobs[np.argmax(yobs):]					####
 
-			args=np.where((q>=r[0])&(q<=r[1]))										####
+			args=np.where((q>=r[0])&(q<=r[1]))									####
 			profile=raw.make_profile(q[args],yobs[args],np.ones(len(q[args])),filename)
 			ift=raw.bift(profile)
 
@@ -37,7 +37,7 @@ for r in ranges:
 			plt.plot(q,yobs)
 			plt.plot(ift[0].q_orig,ift[0].i_orig)
 			plt.plot(ift[0].q_orig,ift[0].i_fit)
-			plt.xscale('log');plt.yscale('log');plt.xlim([1e-4,None])
+			plt.xscale('log');plt.yscale('log');plt.xlim([r[0]/2,r[0]*2])
 			plt.savefig(filename+'_iq.png')
 
 			plt.close('all')
