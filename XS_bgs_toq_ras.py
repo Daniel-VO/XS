@@ -56,7 +56,7 @@ for p in paths:
 			argscut=np.where((q>=min(qbg))&(q<=max(qbg)))
 			q=q[argscut];yobs=yobs[argscut]										#cut
 			ybg=bg(q)
-			yobs-=ybg/max(yobg)*max(yobs)										#bgcorr
+			yobs-=ybg/max(ybg)*max(yobs)										#bgcorr
 
 			plt.close('all')
 			if len(BGfiles)==1:
