@@ -1,5 +1,5 @@
 """
-Created 26. November 2024 by Daniel Van Opdenbosch, Technical University of Munich
+Created 29. November 2024 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -56,7 +56,7 @@ for p in paths:
 			argscut=np.where((q>=min(qbg))&(q<=max(qbg)))
 			q=q[argscut];yobs=yobs[argscut]										#cut
 			ybg=bg(q)
-			yobs-=ybg															#bgcorr
+			yobs-=ybg/max(yobg)*max(yobs)										#bgcorr
 
 			plt.close('all')
 			if len(BGfiles)==1:
