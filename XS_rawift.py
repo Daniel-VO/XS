@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 import bioxtasraw.RAWAPI as raw
 
 ranges=[
-		[7e-3,3e-1],
+		[7e-3,1e0],
 		]
 
 os.system('mv results.log results.alt')
@@ -24,6 +24,8 @@ for r in ranges:
 			print(filename)
 			q,yobs=np.genfromtxt(f,unpack=True)
 
+			args=np.where((q>=r[0])&(q<=r[1]))									####
+			q,yobs=q[args],yobs[args]											####
 			q,yobs=q[np.argmax(yobs):],yobs[np.argmax(yobs):]					####
 
 			args=np.where((q>=r[0])&(q<=r[1]))									####
@@ -37,7 +39,7 @@ for r in ranges:
 			plt.plot(q,yobs)
 			plt.plot(ift[0].q_orig,ift[0].i_orig)
 			plt.plot(ift[0].q_orig,ift[0].i_fit)
-			plt.xscale('log');plt.yscale('log');plt.xlim([r[0]/2,r[0]*2])
+			plt.xscale('log');plt.yscale('log');plt.xlim([r[0]/2,r[1]*2])
 			plt.savefig(filename+'_iq.png')
 
 			plt.close('all')
