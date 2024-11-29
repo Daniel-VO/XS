@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 import bioxtasraw.RAWAPI as raw
 
 ranges=[
-		[7e-3,1e0],
+		[7e-3,3e-1],
 		]
 
 os.system('mv results.log results.alt')
