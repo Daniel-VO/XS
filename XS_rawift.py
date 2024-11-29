@@ -39,7 +39,7 @@ for r in ranges:
 			plt.plot(q,yobs)
 			plt.plot(ift[0].q_orig,ift[0].i_orig)
 			plt.plot(ift[0].q_orig,ift[0].i_fit)
-			plt.xscale('log');plt.yscale('log');plt.xlim([r[0]/2,r[1]*2])
+			plt.xscale('log');plt.yscale('log');plt.xlim([r[0]/2,None])
 			plt.savefig(filename+'_iq.png')
 
 			plt.close('all')
