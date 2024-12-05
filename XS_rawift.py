@@ -7,6 +7,7 @@ This program is free software: you can redistribute it and/or modify it under th
 import os
 import sys
 import glob
+import scipy
 import numpy as np
 import jscatter as js
 import matplotlib as mpl
@@ -42,7 +43,7 @@ for r in ranges:
 			bxw=float(open(f).readlines()[0].split('=')[-1])
 			if isinstance(bxw,float):
 				print('Schlitzkorrektur mit Werten a b bxw dIW: ',round(a,4),round(b,4),round(bxw,4),round(dIW,4))
-				dsm=js.sas.desmear(js.dA(np.array([q,yobs])),js.sas.prepareBeamProfile('trapez',a=a,b=b,bxw=bxw,dIW=dIW))
+				dsm=js.sas.desmear(js.dA(np.array([q,scipy.signal.savgol_filter(yobs,3,1)])),js.sas.prepareBeamProfile('trapez',a=a,b=b,bxw=bxw,dIW=dIW))
 				q,yobs=dsm.X,dsm.Y
 
 			args=np.where((q>=r[0])&(q<=r[1]))									####
