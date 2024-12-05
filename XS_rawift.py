@@ -46,8 +46,7 @@ for r in ranges:
 				dsm=js.sas.desmear(js.dA(np.array([q,scipy.signal.savgol_filter(yobs,3,1)])),js.sas.prepareBeamProfile('trapez',a=a,b=b,bxw=bxw,dIW=dIW))
 				q,yobs=dsm.X,dsm.Y
 
-			args=np.where((q>=r[0])&(q<=r[1]))									####
-			profile=raw.make_profile(q[args],yobs[args],np.ones(len(q[args])),filename)
+			profile=raw.make_profile(q,yobs,np.ones(len(q)),filename)
 			guinier=raw.auto_guinier(profile)
 			ift=raw.datgnom(profile)
 
