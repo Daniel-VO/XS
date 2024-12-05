@@ -60,6 +60,6 @@ for r in ranges:
 			plt.plot(ift[0].r,ift[0].p)
 			plt.savefig(filename+'_pr.png')
 
-			raw.save_ift(ift[0],filename+'.ift')
+			raw.save_ift(ift[0],filename+'.')
 			raw.save_report(filename+'.pdf',profiles=[profile],ifts=[ift[0]])
 			print(filename,'rg =',guinier[0],'+-',guinier[2],' bift_rg =',ift[2],'+-',ift[5],file=open('results.log','a'))

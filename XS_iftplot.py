@@ -1,5 +1,5 @@
 """
-Created 29. November 2024 by Daniel Van Opdenbosch, Technical University of Munich
+Created 05. Dezember 2024 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -17,7 +17,7 @@ ranges=[
 		]
 
 for r in ranges:
-	ifts=sorted(raw.load_ifts(glob.glob('*'+str(r)+'*.ift')),key=lambda i: [i.getParameter('filename').replace('SAXS_','SAXS_0') if i.getParameter('filename').split('_bgs_toq_')[0][-2]=='_' else i.getParameter('filename')])
+	ifts=sorted(raw.load_ifts(glob.glob('*'+str(r)+'*.out')),key=lambda i: [i.getParameter('filename').replace('SAXS_','SAXS_0') if i.getParameter('filename').split('_bgs_toq_')[0][-2]=='_' else i.getParameter('filename')])
 
 	names=np.array([])
 	for i in ifts:
