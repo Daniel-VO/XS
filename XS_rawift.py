@@ -38,12 +38,12 @@ for r in ranges:
 			q,yobs=q[np.argmax(yobs):],yobs[np.argmax(yobs):]					####
 
 			plt.close('all')
-			plt.plot(q,yobs)
 
 			bxw=float(open(f).readlines()[0].split('=')[-1])
 			if isinstance(bxw,float):
 				print('Schlitzkorrektur mit Werten a b bxw dIW: ',round(a,4),round(b,4),round(bxw,4),round(dIW,4))
 				dsm=js.sas.desmear(js.dA(np.array([q,scipy.signal.savgol_filter(yobs,3,1)])),js.sas.prepareBeamProfile('trapez',a=a,b=b,bxw=bxw,dIW=dIW))
+				plt.plot(q,yobs)
 				q,yobs=dsm.X,dsm.Y
 
 			profile=raw.make_profile(q,yobs,np.ones(len(q)),filename)
