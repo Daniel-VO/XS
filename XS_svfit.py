@@ -1,5 +1,5 @@
 """
-Created 25. September 2024 by Daniel Van Opdenbosch, Technical University of Munich
+Created 19. February 2025 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -47,7 +47,7 @@ else:
 		params.add(item[0],item[1],min=0)
 
 params.add('plscale',0,min=0,vary=False)
-params.add('power',4,min=2,max=6,vary=False)
+params.add('power',4,min=1,max=6,vary=False)
 
 # ~ params.add('radius_pd',0,min=0,max=1)
 # ~ params.add('radius_pd_n',10,vary=False)
@@ -59,7 +59,7 @@ def fit(g):
 	filename=g.split('_SAXS')[0]
 	global f,qS,yobsS,SAXSres,SAXSkernel;f=g
 	qS,yobsS=np.genfromtxt(f,unpack=True)
-	qy_widthS=float(open(f).readlines()[0].split('=')[-1])
+	q_widthS=float(open(f).readlines()[0].split('=')[-1])
 
 	# ~ qS,yobsS=qS[np.where(qS>1e-2)],yobsS[np.where(qS>1e-2)]						####
 
@@ -67,16 +67,16 @@ def fit(g):
 		params.add('Uscale',params.valuesdict()['scale']/10,min=0);params.add('Ubackground',0,min=0)
 		global qU,yobsU,USAXSres,USAXSkernel
 		qU,yobsU=np.genfromtxt(f.replace('_SAXS','_USAXS'),unpack=True)
-		qy_widthU=float(open(f.replace('_SAXS','_USAXS')).readlines()[0].split('=')[-1])
+		q_widthU=float(open(f.replace('_SAXS','_USAXS')).readlines()[0].split('=')[-1])
 
 		# ~ qU,yobsU=qU[np.where(qU>1e-3)],yobsU[np.where(qU>1e-3)]					####
 
 		qUkernel=pad(qU)
-		USAXSres=Slit1D(qUkernel,qx_width=0.136,qy_width=qy_widthU,q_calc=qUkernel)
+		USAXSres=Slit1D(qUkernel,q_length=0.136,q_width=q_widthU,q_calc=qUkernel)
 		USAXSkernel=model.make_kernel([qUkernel])
 
 	qSkernel=pad(qS)
-	SAXSres=Slit1D(qSkernel,qx_width=0.136,qy_width=qy_widthS,q_calc=qSkernel)
+	SAXSres=Slit1D(qSkernel,q_length=0.136,q_width=q_widthS,q_calc=qSkernel)
 	SAXSkernel=model.make_kernel([qSkernel])
 
 	result=lm.minimize(fitfunc,params,method='least_squares')
