@@ -1,5 +1,5 @@
 """
-Created 29. November 2024 by Daniel Van Opdenbosch, Technical University of Munich
+Created 12. March 2025 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -46,6 +46,9 @@ for p in paths:
 				HWHM=0
 			print('qy_width = '+str(HWHM)+' A^-1')
 			bg=scipy.interpolate.interp1d(qbg,ybg)								#bgint
+		elif len(BGfiles)==0:
+			print('Kein Untergrund')
+			HWHM=0
 
 		@ray.remote
 		def subt(f):
@@ -53,23 +56,27 @@ for p in paths:
 			tt,yobs,eps=np.genfromtxt((i.replace('*','#') for i in open(f)),unpack=True)
 			q=toq(tt)															#to q
 			q=zdc(q,yobs)														#zero drift correction
-			argscut=np.where((q>=min(qbg))&(q<=max(qbg)))
-			q=q[argscut];yobs=yobs[argscut]										#cut
-			ybg=bg(q)
-			yobs-=ybg/max(ybg)*max(yobs)										#bgcorr
+			if len(BGfiles)==0:
+				ybg=np.zeros(yobs.shape)
+			else:
+				argscut=np.where((q>=min(qbg))&(q<=max(qbg)))
+				q=q[argscut];yobs=yobs[argscut]									#cut
+				ybg=bg(q)
+				yobs-=ybg/max(ybg)*max(yobs)									#bgcorr
+
+			if len(BGfiles)==1:
+				plt.close('all')
+				plt.plot(q,yobs+ybg);plt.plot(q,ybg)
+				plt.plot(q,yobs)
+				plt.yscale('log');plt.xlim([q[0]*1.02,-q[0]*1.02]);plt.ylim([(yobs+ybg)[0]/1.02,max(ybg)*1.02])
+				plt.savefig(filename+'_cb.png')
 
 			plt.close('all')
+			plt.plot(q,yobs)
 			if len(BGfiles)==1:
 				plt.plot(q,yobs+ybg);plt.plot(q,ybg)
-			plt.plot(q,yobs)
-			plt.yscale('log');plt.xlim([q[0]*1.02,-q[0]*1.02]);plt.ylim([(yobs+ybg)[0]/1.02,max(ybg)*1.02])
-			plt.savefig(filename+'_cb.png')
-
-			plt.close('all')
-			if len(BGfiles)==1:
-				plt.plot(q,yobs+ybg);plt.plot(q,ybg)
-			plt.plot(q,yobs)
-			plt.xscale('log');plt.yscale('log');plt.xlim([[1e-4,1e-3,1e-2,1e-3][int(np.where(np.array(['*_USAXS','*_SAXS','*_TXRD','*_RSAXS'])==s)[0][0])],None]);plt.ylim([None,2*max(yobs)])
+				plt.xlim([[1e-4,1e-3,1e-2,1e-3][int(np.where(np.array(['*_USAXS','*_SAXS','*_TXRD','*_RSAXS'])==s)[0][0])],None]);plt.ylim([None,2*max(yobs)])
+			plt.xscale('log');plt.yscale('log')
 			plt.savefig(filename+'.png')
 
 			with open(filename+'_bgs_toq.dat','a') as d:
