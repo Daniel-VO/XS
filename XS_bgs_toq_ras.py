@@ -26,7 +26,7 @@ def mkbg(bgfile):
 	qbg=toq(ttbg)																#to q
 	qbg=zdc(qbg,ybg)															#zero drift correction
 	if s=='*_USAXS' or s=='*_SAXS':
-		argsgauss=np.where((qbg>=min(qbg))&(qbg<=-min(qbg)))
+		argsgauss=np.where(qbg<=-min(qbg))
 		popt,pcov=scipy.optimize.curve_fit(gaussian,qbg[argsgauss],ybg[argsgauss],p0=[max(ybg),0,1e-4])
 		HWHM=(2*np.log(2))**0.5*popt[-1]										#HWHM
 	elif s=='*_RSAXS':
@@ -47,14 +47,14 @@ def subt(f,bgfiles):
 		print('Kein Untergrund')
 		HWHM=0
 		ybg=np.zeros(yobs.shape)
-		else:
-			print('Mehrere Untergrunde - Zuordnung pruefen!')
-			bgstrings=['Mylar']
-			for bgstring in bgstrings:
-				if bgstring in filename:
-					bgfile=bgfiles[[i for i,l in enumerate(bgfiles) if bgstring in l][0]]
-				else:
-					bgfile=bgfiles[[i for i,l in enumerate(bgfiles) if bgstring not in l][0]]
+	else:
+		print('Mehrere Untergrunde - Zuordnung pruefen!')
+		bgstrings=['Mylar']
+		for bgstring in bgstrings:
+			if bgstring in filename:
+				bgfile=bgfiles[[i for i,l in enumerate(bgfiles) if bgstring in l][0]]
+			else:
+				bgfile=bgfiles[[i for i,l in enumerate(bgfiles) if bgstring not in l][0]]
 
 		qbg,ybg,HWHM=mkbg(bgfile)
 		argscut=np.where((q>=min(qbg))&(q<=max(qbg)))
