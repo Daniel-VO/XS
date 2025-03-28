@@ -22,7 +22,6 @@ def gaussian(x,a,x0,sigma):
 	return a*np.exp(-((x-x0)/sigma)**2/2)
 
 def mkbg(bgfile):
-	print('bg: ',bgfile)
 	ttbg,ybg,epsbg=np.genfromtxt((i.replace('*','#') for i in open(bgfile)),unpack=True)
 	qbg=toq(ttbg)																#to q
 	qbg=zdc(qbg,ybg)															#zero drift correction
@@ -34,17 +33,16 @@ def mkbg(bgfile):
 		HWHM=qbg[np.where(ybg<max(ybg)/2)[0][0]]
 	else:
 		HWHM=0
-	print('qy_width = '+str(HWHM)+' A^-1')
 
 	return qbg,ybg,HWHM
 
 @ray.remote
 def subt(f,bgfiles):
 	filename=os.path.splitext(f)[0]
-
 	tt,yobs,eps=np.genfromtxt((i.replace('*','#') for i in open(f)),unpack=True)
 	q=toq(tt)																	#to q
 	q=zdc(q,yobs)																#zero drift correction
+
 	if len(bgfiles)==0:
 		print('Kein Untergrund')
 		HWHM=0
@@ -55,6 +53,7 @@ def subt(f,bgfiles):
 		else:
 			print('Mehrere Untergrunde - Zuordnung pruefen!')
 			bgfile=bgfiles[0]
+
 		qbg,ybg,HWHM=mkbg(bgfile)
 		argscut=np.where((q>=min(qbg))&(q<=max(qbg)))
 		q=q[argscut];yobs=yobs[argscut]											#cut
@@ -73,12 +72,14 @@ def subt(f,bgfiles):
 	if len(bgfiles)!=0:
 		plt.plot(q,yobs+ybg);plt.plot(q,ybg)
 		plt.xlim([[1e-4,1e-3,1e-2,1e-3][int(np.where(np.array(['*_USAXS','*_SAXS','*_TXRD','*_RSAXS'])==s)[0][0])],None]);plt.ylim([yobs[-1]/2,2*max(yobs)])
+		plt.figtext(0.98,0.98,'BG: '+os.path.splitext(bgfile)[0],ha='right',va='top')
 	plt.xscale('log');plt.yscale('log')
+	plt.tight_layout(pad=0.1)
 	plt.savefig(filename+'.png')
 
 	with open(filename+'_bgs_toq.dat','a') as d:
 		d.write('#qy_width = '+str(HWHM)+'\n')
-		np.savetxt(d,np.transpose([q,yobs]),fmt='%.16f')
+		np.savetxt(d,np.transpose([q,yobs]),fmt='%.8f')
 
 paths=glob.glob('*/')
 paths.append('')
