@@ -28,13 +28,13 @@ def mkbg(bgfile):
 	if s=='*_USAXS' or s=='*_SAXS':
 		argsgauss=np.where(qbg<=-min(qbg))
 		popt,pcov=scipy.optimize.curve_fit(gaussian,qbg[argsgauss],ybg[argsgauss],p0=[max(ybg),0,1e-4])
-		HWHM=(2*np.log(2))**0.5*popt[-1]										#HWHM
+		HWHM=(2*np.log(2))**0.5*abs(popt[-1])									#HWHM
 	elif s=='*_RSAXS':
 		HWHM=qbg[np.where(ybg<max(ybg)/2)[0][0]]
 	else:
 		HWHM=0
 
-	return qbg,ybg,HWHM
+	return qbg,ybg,HWHM,popt
 
 @ray.remote
 def subt(f,bgfiles):
@@ -56,7 +56,7 @@ def subt(f,bgfiles):
 			else:
 				bgfile=bgfiles[[i for i,l in enumerate(bgfiles) if bgstring not in l][0]]
 
-		qbg,ybg,HWHM=mkbg(bgfile)
+		qbg,ybg,HWHM,popt=mkbg(bgfile)
 		argscut=np.where((q>=min(qbg))&(q<=max(qbg)))
 		q=q[argscut];yobs=yobs[argscut]											#cut
 		ybg=scipy.interpolate.interp1d(qbg,ybg)(q)
@@ -66,6 +66,7 @@ def subt(f,bgfiles):
 		plt.close('all')
 		plt.plot(q,yobs+ybg);plt.plot(q,ybg)
 		plt.plot(q,yobs)
+		plt.plot(np.linspace(q[0],-q[0]),gaussian(np.linspace(q[0],-q[0]),*popt))
 		plt.yscale('log');plt.xlim([q[0]*1.02,-q[0]*1.02]);plt.ylim([(yobs+ybg)[0]/1.02,max(ybg)*1.02])
 		plt.savefig(filename+'_cb.png')
 
