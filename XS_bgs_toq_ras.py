@@ -47,12 +47,14 @@ def subt(f,bgfiles):
 		print('Kein Untergrund')
 		HWHM=0
 		ybg=np.zeros(yobs.shape)
-	else:
-		if len(bgfiles)==1:
-			bgfile=bgfiles[0]
 		else:
 			print('Mehrere Untergrunde - Zuordnung pruefen!')
-			bgfile=bgfiles[0]
+			bgstrings=['Mylar']
+			for bgstring in bgstrings:
+				if bgstring in filename:
+					bgfile=bgfiles[[i for i,l in enumerate(bgfiles) if bgstring in l][0]]
+				else:
+					bgfile=bgfiles[[i for i,l in enumerate(bgfiles) if bgstring not in l][0]]
 
 		qbg,ybg,HWHM=mkbg(bgfile)
 		argscut=np.where((q>=min(qbg))&(q<=max(qbg)))
