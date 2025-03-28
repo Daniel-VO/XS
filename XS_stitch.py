@@ -1,5 +1,5 @@
 """
-Created 07. March 2024 by Daniel Van Opdenbosch, Technical University of Munich
+Created 28. March 2025 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -53,4 +53,4 @@ for f in glob.glob('*_SAXS*.dat'):
 	plt.xscale('log');plt.yscale('log')
 	plt.savefig(filename+'_stitch.png')
 
-	np.savetxt(filename+'_stitch.dat',np.transpose([np.concatenate((qU,qS,qW)),np.concatenate((yobsU,yobsS,yobsW))]),fmt='%.16f')
+	np.savetxt(filename+'_stitch.dat',np.transpose([np.concatenate((qU,qS,qW)),np.concatenate((yobsU,yobsS,yobsW))]),fmt='%.8f')
