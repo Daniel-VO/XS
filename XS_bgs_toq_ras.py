@@ -21,21 +21,6 @@ def zdc(q,y):
 def gaussian(x,a,x0,sigma):
 	return a*np.exp(-((x-x0)/sigma)**2/2)
 
-def mkbg(bgfile):
-	ttbg,ybg,epsbg=np.genfromtxt((i.replace('*','#') for i in open(bgfile)),unpack=True)
-	qbg=toq(ttbg)																#to q
-	qbg=zdc(qbg,ybg)															#zero drift correction
-	if s=='*_USAXS' or s=='*_SAXS':
-		argsgauss=np.where(qbg<=-min(qbg))
-		popt,pcov=scipy.optimize.curve_fit(gaussian,qbg[argsgauss],ybg[argsgauss],p0=[max(ybg),0,1e-4])
-		HWHM=(2*np.log(2))**0.5*abs(popt[-1])									#HWHM
-	elif s=='*_RSAXS':
-		HWHM=qbg[np.where(ybg<max(ybg)/2)[0][0]]
-	else:
-		HWHM=0
-
-	return qbg,ybg,HWHM,popt
-
 @ray.remote
 def subt(f,bgfiles):
 	filename=os.path.splitext(f)[0]
@@ -56,18 +41,28 @@ def subt(f,bgfiles):
 			else:
 				bgfile=bgfiles[[i for i,l in enumerate(bgfiles) if bgstring not in l][0]]
 
-		qbg,ybg,HWHM,popt=mkbg(bgfile)
+		ttbg,ybg,epsbg=np.genfromtxt((i.replace('*','#') for i in open(bgfile)),unpack=True)
+		qbg=toq(ttbg)															#to q
+		qbg=zdc(qbg,ybg)														#zero drift correction
+		if s=='*_USAXS' or s=='*_SAXS':
+			argsgauss=np.where(qbg<=-min(qbg))
+			popt,pcov=scipy.optimize.curve_fit(gaussian,qbg[argsgauss],ybg[argsgauss],p0=[max(ybg),0,1e-4])
+			HWHM=(2*np.log(2))**0.5*abs(popt[-1])								#HWHM
+		elif s=='*_RSAXS':
+			HWHM=qbg[np.where(ybg<max(ybg)/2)[0][0]]
+		else:
+			HWHM=0
+
 		argscut=np.where((q>=min(qbg))&(q<=max(qbg)))
 		q=q[argscut];yobs=yobs[argscut]											#cut
 		ybg=scipy.interpolate.interp1d(qbg,ybg)(q)
 		yobs-=ybg/max(ybg)*max(yobs)											#bgcorr
 
-	if len(bgfiles)!=0:
 		plt.close('all')
 		plt.plot(q,yobs+ybg);plt.plot(q,ybg)
 		plt.plot(q,yobs)
 		plt.plot(np.linspace(q[0],-q[0]),gaussian(np.linspace(q[0],-q[0]),*popt))
-		plt.yscale('log');plt.xlim([q[0]*1.02,-q[0]*1.02]);plt.ylim([(yobs+ybg)[0]/1.02,max(ybg)*1.02])
+		plt.yscale('log');plt.xlim([q[0]*1.02,-q[0]*1.02]);plt.ylim([(yobs+ybg)[0]/1.02,max(gaussian(np.linspace(q[0],-q[0]),*popt))*1.02])
 		plt.savefig(filename+'_cb.png')
 
 	plt.close('all')
