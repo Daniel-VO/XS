@@ -1,5 +1,5 @@
 """
-Created 05. Dezember 2024 by Daniel Van Opdenbosch, Technical University of Munich
+Created 01. April 2025 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -42,7 +42,7 @@ for r in ranges:
 			bxw=float(open(f).readlines()[0].split('=')[-1])
 			if isinstance(bxw,float):
 				print('Schlitzkorrektur mit Werten a b bxw dIW: ',round(a,4),round(b,4),round(bxw,4),round(dIW,4))
-				dsm=js.sas.desmear(js.dA(np.array([q,scipy.signal.savgol_filter(yobs,3,1)])),js.sas.prepareBeamProfile('trapez',a=a,b=b,bxw=bxw,dIW=dIW))
+				dsm=js.sas.desmear(js.dA(np.array([q,yobs])),js.sas.prepareBeamProfile('trapez',a=a,b=b,bxw=bxw,dIW=dIW))
 				plt.plot(q,yobs)
 				q,yobs=dsm.X,dsm.Y
 
