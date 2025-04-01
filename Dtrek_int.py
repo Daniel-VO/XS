@@ -1,5 +1,5 @@
 """
-Created 12. November 2024 by Daniel Van Opdenbosch, Technical University of Munich
+Created 01. April 2025 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -14,7 +14,7 @@ import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import pybaselines as pb;bl=pb.api.Baseline()
-from pyFAI import azimuthalIntegrator as pa
+import pyFAI.integrator.azimuthal as pa
 from pyFAI.units import get_unit_fiber
 
 if len(sys.argv)>1:
@@ -23,12 +23,14 @@ else:
 	geom=''
 
 def label(string):
-	return r'$'+str(string).replace('^-1','^{-1}').replace('_deg','/^\circ').replace('A',r'\rm{A}').replace('nm',r'\rm{nm}').replace('_','}/').replace('q','q_{').replace('th',r'\theta').replace('chi',r'\chi')+'$'
+	return r'$'+str(string).replace('^-1','^{-1}').replace('_deg','/^\circ').replace('A',r'\rm{\AA}').replace('nm',r'\rm{nm}').replace('_','}}/').replace('th',r'\theta').replace('q','q_{\mathrm{').replace('chi',r'\chi')+'$'
 
 def take(img,headerkey,indices):
 	return np.fromstring(img.header[headerkey],sep=' ')[indices]
 
-for f in glob.glob('*[!_BG_image].img'):
+SAXSmin=1e-1
+
+for f in glob.glob('*.img'):
 	img=fabio.open(f);filename=os.path.splitext(f)[0].replace('_image','');print(filename)
 	detdist=take(img,'PXD_GONIO_VALUES',-1);beamcenterX,beamcenterY,pxsizeX,pxsizeY=take(img,'PXD_SPATIAL_DISTORTION_INFO',[0,1,2,3]);wavelength=take(img,'SOURCE_WAVELENGTH',-1);omega,chi,phi=take(img,'CRYSTAL_GONIO_VALUES',[0,1,2])
 	ai=pa.AzimuthalIntegrator(dist=detdist/1e3,poni1=beamcenterY*pxsizeY/1e3,poni2=beamcenterX*pxsizeX/1e3,pixel1=pxsizeY/1e3,pixel2=pxsizeX/1e3,wavelength=wavelength/1e10)
@@ -59,8 +61,8 @@ for f in glob.glob('*[!_BG_image].img'):
 	plt.plot(mfilt1d.radial,mfilt1d.intensity)
 	plt.plot(mfilt1d.radial,baseline)
 	if 'SAXS' in filename:
-		plt.yscale('log')
-	plt.savefig(filename+'_BG1d.png',dpi=300)
+		plt.yscale('log');plt.ylim([SAXSmin,None])
+	plt.savefig(filename+'_BG1d.png')
 
 	for bgs in ['','_bgs']:
 		#2D
@@ -76,7 +78,7 @@ for f in glob.glob('*[!_BG_image].img'):
 		else:
 			plt.figure(figsize=(7.5/2.54,5.3/2.54))
 
-		plt.pcolormesh(int2d.radial,int2d.azimuthal,int2d.intensity,cmap='coolwarm',norm=mpl.colors.LogNorm(vmin=1e-1
+		plt.pcolormesh(int2d.radial,int2d.azimuthal,int2d.intensity,cmap='coolwarm',norm=mpl.colors.LogNorm(vmin=SAXSmin
 		) if 'SAXS' in filename else None)
 
 		plt.xlabel(label(int2d.radial_unit));plt.ylabel(label(int2d.azimuthal_unit))
@@ -85,27 +87,26 @@ for f in glob.glob('*[!_BG_image].img'):
 		plt.savefig(filename+bgs+'.png',dpi=300)
 
 		#1D
-		for rang in [None,]:
-			plt.close('all')
-			plt.figure(figsize=(7.5/2.54,5.3/2.54))
-			mpl.rc('text',usetex=True);mpl.rc('text.latex',preamble=r'\usepackage[helvet]{sfmath}')
+		for azirang in [None,]:													#Anpassen
+			for radrang in [None,(20,21)]:										#Anpassen
+				plt.close('all')
+				plt.figure(figsize=(7.5/2.54,5.3/2.54))
+				mpl.rc('text',usetex=True);mpl.rc('text.latex',preamble=r'\usepackage[helvet]{sfmath}')
 
-			if geom=='Faser':
-				int1d=ai.integrate_fiber(img.data,npt_output=npts[0],output_unit=units[0],integrated_unit=units[1],integrated_unit_range=rang,method=method,filename=filename+'_'+str(rang).replace(', ','-')+bgs+'.xy')
-				int1d.intensity[np.where(abs(int1d.radial)==min(abs(int1d.radial)))]=0
-			else:
-				int1d=ai.integrate1d(img.data,npt=npts[0],azimuth_range=rang,unit=units,method=method,filename=filename+'_'+str(rang).replace(', ','-')+bgs+'.xy')
-				np.savetxt(filename+'_'+str(rang).replace(', ','-')+bgs+'_rad.xy',np.array(ai.integrate_radial(img.data,npt=min(npts),radial_range=rang,method=method)).transpose())
+				if geom=='Faser':
+					int1d=ai.integrate_fiber(img.data,npt_output=npts[0],output_unit=units[0],integrated_unit=units[1],integrated_unit_range=radrang,method=method,filename=filename+'_'+str(rang).replace(', ','-')+bgs+'.xy')
+					int1d.intensity[np.where(abs(int1d.radial)==min(abs(int1d.radial)))]=0
+				else:
+					int1d=ai.integrate1d(img.data,npt=npts[0],azimuth_range=azirang,unit=units,method=method,filename=filename+'_'+str(azirang).replace(', ','-')+bgs+'.xy')
+					np.savetxt(filename+'_'+str(radrang).replace(', ','-')+bgs+'_rad.xy',np.array(ai.integrate_radial(img.data,npt=min(npts),radial_range=radrang,radial_unit=int2d.radial_unit,method=method)).transpose())
 
-			plt.plot(int1d.radial,int1d.intensity,'k',linewidth=0.5)
+				plt.plot(int1d.radial,int1d.intensity,'k',linewidth=0.5)
 
-			if 'SAXS' in filename:
-				plt.yscale('log');plt.ylim([1e-1,None])
-			plt.xlabel(label(int1d.unit));plt.ylabel(r'$I/1$')
-			plt.tick_params(axis='both',pad=2,labelsize=8)
-			plt.tight_layout(pad=0.1)
-			plt.savefig(filename+'_'+str(rang).replace(', ','-')+bgs+'.png',dpi=300)
+				if 'SAXS' in filename:
+					plt.yscale('log');plt.ylim([SAXSmin,None])
+				plt.xlabel(label(int1d.unit));plt.ylabel(r'$I/1$')
+				plt.tick_params(axis='both',pad=2,labelsize=8)
+				plt.tight_layout(pad=0.1)
+				plt.savefig(filename+'_'+str(azirang).replace(', ','-')+bgs+'.png',dpi=300)
 
 		img.data=img.data-isotropic
-
-
