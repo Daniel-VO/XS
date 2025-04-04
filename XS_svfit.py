@@ -1,5 +1,5 @@
 """
-Created 02. April 2025 by Daniel Van Opdenbosch, Technical University of Munich
+Created 04. April 2025 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -48,7 +48,8 @@ if str(sys.argv[1])=='unified_power_Rg':
 		params.add('G'+str(level+1),400,min=0)
 else:
 	for item in model.info.parameters._get_defaults().items():
-		params.add(item[0],item[1],min=0)
+		if 'sld' not in item[0] and item[1]!=0 and item[1]!=90:
+			params.add(item[0],item[1],min=0)
 
 # ~ params.add('radius_pd',0,min=0,max=1)
 # ~ params.add('radius_pd_n',10,vary=False)
@@ -80,7 +81,7 @@ def fit(g):
 	SAXSres=Slit1D(qSkernel,q_length=dIW,q_width=q_widthS,q_calc=qSkernel)
 	SAXSkernel=model.make_kernel([qSkernel])
 
-	result=lm.minimize(fitfunc,params,method='least_squares')
+	result=lm.minimize(fitfunc,params,method='leastsq')
 	print(filename,sys.argv[1])
 	result.params.pretty_print()
 	prm=result.params.valuesdict()
