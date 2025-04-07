@@ -28,7 +28,7 @@ def label(string):
 def take(img,headerkey,indices):
 	return np.fromstring(img.header[headerkey],sep=' ')[indices]
 
-SAXSmin=1e-1	####
+SAXSmin=1e-1																	####
 
 for f in glob.glob('*.img'):
 	img=fabio.open(f);filename=os.path.splitext(f)[0].replace('_image','');print(filename)
@@ -86,8 +86,8 @@ for f in glob.glob('*.img'):
 		plt.savefig(filename+isub+'.png',dpi=300)
 
 		#1D
-		for azirang in [None,]:													#Anpassen
-			for radrang in [None,(20,21)]:										#Anpassen
+		for azirang in [None,]:													####
+			for radrang in [None,(20,21)]:										####
 				plt.close('all')
 				plt.figure(figsize=(7.5/2.54,5.3/2.54))
 				mpl.rc('text',usetex=True);mpl.rc('text.latex',preamble=r'\usepackage[helvet]{sfmath}')
