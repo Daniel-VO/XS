@@ -1,5 +1,5 @@
 """
-Created 08. April 2025 by Daniel Van Opdenbosch, Technical University of Munich
+Created 10. April 2025 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -54,7 +54,7 @@ def subt(f,bgfiles):
 		argscut=np.where((q>=min(qbg))&(q<=max(qbg)))
 		q=q[argscut];yobs=yobs[argscut]											#cut
 		ybg=scipy.interpolate.interp1d(qbg,ybg)(q)
-		yobs-=ybg/max(ybg)*max(yobs)											#bgcorr
+		yobs-=ybg/gpb[0]*gpm[0]													#bgcorr
 
 		plt.close('all')
 		plt.plot(q,yobs+ybg);plt.plot(q,ybg);plt.plot(q,yobs)
