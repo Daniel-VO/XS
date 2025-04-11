@@ -1,5 +1,5 @@
 """
-Created 04. April 2025 by Daniel Van Opdenbosch, Technical University of Munich
+Created 11. April 2025 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -8,6 +8,7 @@ import os
 import ray
 import sys
 import glob
+import funcy
 import lmfit as lm
 import numpy as np
 import sasmodels as sm
@@ -23,10 +24,10 @@ def pad(q):
 def fitfunc(params):
 	prm=params.valuesdict()
 	global res
-	res=((yobsS-SAXSres.apply(call_kernel(SAXSkernel,prm))[50:-50])*qS**2)
+	res=((yobsS-SAXSres.apply(call_kernel(SAXSkernel,funcy.omit(prm,['Uscale','Ubackground'])))[50:-50])*qS**2)
 	if os.path.isfile(f.replace('_SAXS','_USAXS')):
 		prm['scale']=prm['Uscale'];prm['background']=prm['Ubackground']
-		res=np.append(((yobsU-USAXSres.apply(call_kernel(USAXSkernel,prm))[50:-50])*qU**2),res)
+		res=np.append(((yobsU-USAXSres.apply(call_kernel(USAXSkernel,funcy.omit(prm,['Uscale','Ubackground'])))[50:-50])*qU**2),res)
 	return np.nan_to_num(res)
 
 f=10;s=10;lamb=1.5406;rGon=300;d1=173.5;d2=2*rGon-d1
@@ -92,12 +93,12 @@ def fit(g):
 	plt.figure(figsize=(7.5/2.54,5.3/2.54))
 
 	plt.scatter(qS,yobsS,c='k',marker='.',s=2,linewidth=0)
-	plt.plot(qSkernel[50:-50],SAXSres.apply(call_kernel(SAXSkernel,prm))[50:-50],'0.3',linewidth=0.5)
+	plt.plot(qSkernel[50:-50],SAXSres.apply(call_kernel(SAXSkernel,funcy.omit(prm,['Uscale','Ubackground'])))[50:-50],'0.3',linewidth=0.5)
 
 	if os.path.isfile(f.replace('_SAXS','_USAXS')):
 		prm['scale']=prm['Uscale'];prm['background']=prm['Ubackground']
 		plt.scatter(qU,yobsU,c='k',marker='.',s=2,linewidth=0)
-		plt.plot(qUkernel[50:-50],USAXSres.apply(call_kernel(USAXSkernel,prm))[50:-50],'0.3',linewidth=0.5)
+		plt.plot(qUkernel[50:-50],USAXSres.apply(call_kernel(USAXSkernel,funcy.omit(prm,['Uscale','Ubackground'])))[50:-50],'0.3',linewidth=0.5)
 
 	plt.xscale('log');plt.yscale('log')
 
