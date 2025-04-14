@@ -1,5 +1,5 @@
 """
-Created 11. April 2025 by Daniel Van Opdenbosch, Technical University of Munich
+Created 14. April 2025 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -24,10 +24,10 @@ def pad(q):
 def fitfunc(params):
 	prm=params.valuesdict()
 	global res
-	res=((yobsS-SAXSres.apply(call_kernel(SAXSkernel,funcy.omit(prm,['Uscale','Ubackground'])))[50:-50])*qS**2)
+	res=((yobsS-SAXSres.apply(call_kernel(SAXSkernel,funcy.omit(prm,['Uscale','Ubackground'])))[50:-50])*qS**1)
 	if os.path.isfile(f.replace('_SAXS','_USAXS')):
 		prm['scale']=prm['Uscale'];prm['background']=prm['Ubackground']
-		res=np.append(((yobsU-USAXSres.apply(call_kernel(USAXSkernel,funcy.omit(prm,['Uscale','Ubackground'])))[50:-50])*qU**2),res)
+		res=np.append(((yobsU-USAXSres.apply(call_kernel(USAXSkernel,funcy.omit(prm,['Uscale','Ubackground'])))[50:-50])*qU**1),res)
 	return np.nan_to_num(res)
 
 f=10;s=10;lamb=1.5406;rGon=300;d1=173.5;d2=2*rGon-d1
@@ -44,7 +44,7 @@ if str(sys.argv[1])=='unified_power_Rg':
 	params.add('level',int(sys.argv[2]),vary=False)
 	for level in np.arange(int(sys.argv[2])):
 		params.add('rg'+str(level+1),15.8,min=0)
-		params.add('power'+str(level+1),4,min=2,max=6)
+		params.add('power'+str(level+1),4,min=1,max=6)
 		params.add('B'+str(level+1),4.5e-6,min=0)
 		params.add('G'+str(level+1),400,min=0)
 else:
