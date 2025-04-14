@@ -41,6 +41,7 @@ model=load_model(str(sys.argv[1]))
 params=lm.Parameters()
 if str(sys.argv[1])=='unified_power_Rg':
 	params.add('scale',1,min=0)
+	params.add('background',0.001,min=0)
 	params.add('level',int(sys.argv[2]),vary=False)
 	for level in np.arange(int(sys.argv[2])):
 		params.add('rg'+str(level+1),15.8,min=0)
