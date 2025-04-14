@@ -1,5 +1,5 @@
 """
-Created 13. May 2024 by Daniel Van Opdenbosch, Technical University of Munich
+Created 14. April 2025 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -29,6 +29,7 @@ for i,valuei in enumerate(values):
 	argsort=np.argsort(fnames)
 	plt.errorbar(fnames[argsort],values[i][argsort])#,yerr=stderrs[i])
 	plt.setp(plt.gca().xaxis.get_majorticklabels(),rotation=45,ha='right',rotation_mode='anchor')
+	plt.tight_layout(pad=0.1)
 	plt.savefig(str(sys.argv[1])+'_'+names[i]+'.png')
 
 plt.close('all')
