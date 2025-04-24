@@ -1,5 +1,5 @@
 """
-Created 14. April 2025 by Daniel Van Opdenbosch, Technical University of Munich
+Created 24. April 2025 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -33,9 +33,9 @@ def fitfunc(params):
 f=10;s=10;lamb=1.5406;rGon=300;d1=173.5;d2=2*rGon-d1
 AHlen=(f/2+s/2)/d1*2*rGon
 LHlen=(f/2+s/2)/d1*d2
-a=4*np.pi*np.sin(np.arctan(AHlen/rGon/2))/lamb
-b=4*np.pi*np.sin(np.arctan(LHlen/rGon/2))/lamb
-dIW=4*np.pi*np.sin(np.arctan((AHlen-LHlen)/rGon/2))/lamb
+a=4*np.pi*np.sin(np.arctan(AHlen/2/rGon))/lamb
+b=4*np.pi*np.sin(np.arctan(LHlen/2/rGon))/lamb
+dIW=4*np.pi*np.sin(np.arctan((AHlen-LHlen)/2/rGon))/lamb
 
 model=load_model(str(sys.argv[1]))
 params=lm.Parameters()
