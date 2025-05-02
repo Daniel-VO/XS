@@ -1,5 +1,5 @@
 """
-Created 10. April 2025 by Daniel Van Opdenbosch, Technical University of Munich
+Created 02. Mai 2025 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -26,7 +26,7 @@ def gaussfit(q,y):
 def subt(f,bgfiles):
 	filename=os.path.splitext(f)[0]
 	tt,yobs,eps=np.genfromtxt((i.replace('*','#') for i in open(f)),unpack=True)
-	q=toq(tt)																	#to q
+	q=toq(tt);bgs=''															#to q
 
 	if len(bgfiles)==0:
 		print('Kein Untergrund')
@@ -54,7 +54,7 @@ def subt(f,bgfiles):
 		argscut=np.where((q>=min(qbg))&(q<=max(qbg)))
 		q=q[argscut];yobs=yobs[argscut]											#cut
 		ybg=scipy.interpolate.interp1d(qbg,ybg)(q)
-		yobs-=ybg/gpb[0]*gpm[0]													#bgcorr
+		yobs-=ybg/gpb[0]*gpm[0];bgs='_bgs'										#bgcorr
 
 		plt.close('all')
 		plt.plot(q,yobs+ybg);plt.plot(q,ybg);plt.plot(q,yobs)
@@ -73,7 +73,7 @@ def subt(f,bgfiles):
 	plt.tight_layout(pad=0.1)
 	plt.savefig(filename+'.png')
 
-	with open(filename+'_bgs_toq.dat','a') as d:
+	with open(filename+bgs+'_toq.dat','a') as d:
 		d.write('#qy_width = '+str(HWHM)+'\n')
 		np.savetxt(d,np.transpose([q,yobs]),fmt='%.8f')
 
