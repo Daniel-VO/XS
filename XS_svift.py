@@ -47,7 +47,7 @@ for ran in ranges:
 		invertor.set_x(q);invertor.set_y(yobs);invertor.set_err(np.ones(len(q)))
 		invertor.set_slit_height(dIW);invertor.set_slit_width(float(open(f).readlines()[0].split('=')[-1]))
 
-		out,cov=invertor.invert(nfunc=int(invertor.get_dmax()/11))
+		out,cov=invertor.invert(nfunc=int(invertor.get_dmax()/12))
 		r=np.arange(0.0,invertor.d_max,invertor.d_max/100)
 		pr=invertor.pr_err(out,cov,r)
 
@@ -58,7 +58,7 @@ for ran in ranges:
 			else:
 				invertor.set_dmax(1.2*invertor.get_dmax())
 
-			out,cov=invertor.invert(nfunc=int(invertor.get_dmax()/11))
+			out,cov=invertor.invert(nfunc=int(invertor.get_dmax()/12))
 			r=np.arange(0.0,invertor.d_max,invertor.d_max/100)
 			pr=invertor.pr_err(out,cov,r)
 
