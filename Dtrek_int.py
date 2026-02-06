@@ -1,5 +1,5 @@
 """
-Created 07. April 2025 by Daniel Van Opdenbosch, Technical University of Munich
+Created 03. Dezember 2025 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -71,7 +71,7 @@ for f in glob.glob('*.img'):
 
 		if geom=='Faser':
 			plt.figure(figsize=(5.3/2.54,5.3/2.54))
-			radg,azig=np.meshgrid(int2d.radial,int2d.azimuthal);args=np.where(abs(radg)==np.min(abs(radg)))
+			radg,azig=np.meshgrid(int2d.radial,int2d.azimuthal);args=abs(radg)==np.min(abs(radg))
 			int2d.intensity[args]=np.median([int2d.intensity[args[0],args[1]-1],int2d.intensity[args[0],args[1]+1]],axis=0)
 			plt.gca().set_aspect('equal')
 		else:
@@ -93,8 +93,8 @@ for f in glob.glob('*.img'):
 				mpl.rc('text',usetex=True);mpl.rc('text.latex',preamble=r'\usepackage[helvet]{sfmath}')
 
 				if geom=='Faser':
-					int1d=ai.integrate_fiber(img.data,npt_output=npts[0],output_unit=units[0],integrated_unit=units[1],integrated_unit_range=radrang,method=method,filename=filename+'_'+str(rang).replace(', ','-')+isub+'.xy')
-					int1d.intensity[np.where(abs(int1d.radial)==min(abs(int1d.radial)))]=0
+					int1d=ai.integrate_fiber(img.data,npt_output=npts[0],output_unit=units[0],integrated_unit=units[1],integrated_unit_range=radrang,method=method,filename=filename+'_'+str(radrang).replace(', ','-')+isub+'.xy')
+					int1d.intensity[abs(int1d.radial)==min(abs(int1d.radial))]=0
 				else:
 					int1d=ai.integrate1d(img.data,npt=npts[0],azimuth_range=azirang,unit=units,method=method,filename=filename+'_'+str(azirang).replace(', ','-')+isub+'.xy')
 					np.savetxt(filename+'_'+str(radrang).replace(', ','-')+isub+'_rad.xy',np.array(ai.integrate_radial(img.data,npt=min(npts),radial_range=radrang,radial_unit=int2d.radial_unit,method=method)).transpose())
