@@ -1,5 +1,5 @@
 """
-Created 10. June 2025 by Daniel Van Opdenbosch, Technical University of Munich
+Created 03. Dezember 2025 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -32,8 +32,9 @@ for f in glob.glob('*_rad.xy'):
 	phi=np.radians(phi_deg)
 
 	phicorr=phi-phi[np.argmax(yobs)]
-	args=np.where((phicorr>=0)&(phicorr<=90))
-	cosq=np.trapz((yobs*np.cos(phicorr)**2*np.sin(phicorr))[args],x=phicorr[args])/np.trapz((yobs*np.sin(phicorr))[args],x=phicorr[args])
+	args=(phicorr>=0)&(phicorr<=90)
+	cosq=np.trapz((yobs*np.sin(phicorr)*np.cos(phicorr)**2)[args],x=phicorr[args])/\
+		 np.trapz((yobs*np.sin(phicorr))[args],x=phicorr[args])
 	fc=(3*cosq-1)/2
 
 	params=lm.Parameters()
@@ -41,7 +42,7 @@ for f in glob.glob('*_rad.xy'):
 	for o in Orientierungen:
 		params.add('p0_'+str(o),0.5,min=0,max=1)
 		params.add('p_'+str(o),50,min=0)
-		params.add('phihkl_'+str(o),phi[np.where(yobs==max(yobs))][0])
+		params.add('phihkl_'+str(o),phi[yobs==max(yobs)][0])
 
 	result=lm.minimize(fitfunc,params,method='bfgs')
 	prm=result.params.valuesdict()

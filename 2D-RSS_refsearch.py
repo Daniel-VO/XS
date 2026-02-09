@@ -1,5 +1,5 @@
 """
-Created 03. Mai 2024 by Daniel Van Opdenbosch, Technical University of Munich
+Created 03. Dezember 2025 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -22,11 +22,11 @@ qy=-q*np.sin(chi)*np.cos(phi)
 qz= q*np.cos(chi)
 
 plt.close('all')
-plt.scatter(q,yobs,marker='.',s=1,c='k')
+plt.plot(q,yobs,color='k',marker='.')
 
 limit=np.max(yobs)/2*np.exp(-q**2/30)
-plt.scatter(q,limit,marker='.',s=1)
-cutoff=np.where(yobs>limit)
+plt.plot(q,limit,'.')
+cutoff=yobs>limit
 q0,qx0,qy0,qz0,yobs0=q[cutoff],qx[cutoff],qy[cutoff],qz[cutoff],yobs[cutoff]
 
 coords=np.array([qx0,qy0,qz0]).transpose()
@@ -35,7 +35,7 @@ distances=scipy.spatial.distance.cdist(coords,coords,'euclidean')
 indices,q,qx,qy,qz,yobs,sigq=np.array([]),np.array([]),np.array([]),np.array([]),np.array([]),np.array([]),np.array([])
 for i,valuei in enumerate(distances):
 	if i not in indices:
-		similar=np.where(valuei<1)
+		similar=valuei<1
 		indices=np.append(indices,similar)
 		q=np.append(q,np.average(q0[similar],weights=yobs0[similar]))
 		qx=np.append(qx,np.average(qx0[similar],weights=yobs0[similar]))
@@ -44,7 +44,7 @@ for i,valuei in enumerate(distances):
 		yobs=np.append(yobs,np.max(yobs0[similar]))
 		sigq=np.append(sigq,np.std(q0[similar]))
 
-		plt.scatter(q0[similar],yobs0[similar],marker='.',s=1)
+		plt.plot(q0[similar],yobs0[similar],'.')
 		plt.errorbar(q[-1],yobs[-1],xerr=sigq[-1],marker='s',markersize=1,elinewidth=1,capthick=1,capsize=2,linewidth=0)
 plt.savefig('ints.png',dpi=300)
 

@@ -6,8 +6,6 @@ from scipy import interpolate
 
 for f in glob.glob('*.csv'):
 	filename=os.path.splitext(f)[0]
-	print(filename)
-
 	plt.close('all')
 
 	if 'RSM' in open(f).readlines()[0]:
