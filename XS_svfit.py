@@ -1,5 +1,5 @@
 """
-Created 24. April 2025 by Daniel Van Opdenbosch, Technical University of Munich
+Created 03. Dezember 2025 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -43,7 +43,7 @@ if str(sys.argv[1])=='unified_power_Rg':
 	params.add('scale',1,min=0)
 	params.add('background',0.001,min=0)
 	params.add('level',int(sys.argv[2]),vary=False)
-	for level in np.arange(int(sys.argv[2])):
+	for level in range(int(sys.argv[2])):
 		params.add('rg'+str(level+1),15.8,min=0)
 		params.add('power'+str(level+1),4,min=1,max=6)
 		params.add('B'+str(level+1),4.5e-6,min=0)
@@ -65,7 +65,7 @@ def fit(g):
 	qS,yobsS=np.genfromtxt(f,unpack=True)
 	q_widthS=float(open(f).readlines()[0].split('=')[-1])
 
-	# ~ qS,yobsS=qS[np.where(qS>1e-2)],yobsS[np.where(qS>1e-2)]						####
+	# ~ qS,yobsS=qS[qS>1e-2],yobsS[qS>1e-2]						####
 
 	if os.path.isfile(f.replace('_SAXS','_USAXS')):
 		params.add('Uscale',params.valuesdict()['scale']/10,min=0);params.add('Ubackground',0,min=0)
@@ -73,7 +73,7 @@ def fit(g):
 		qU,yobsU=np.genfromtxt(f.replace('_SAXS','_USAXS'),unpack=True)
 		q_widthU=float(open(f.replace('_SAXS','_USAXS')).readlines()[0].split('=')[-1])
 
-		# ~ qU,yobsU=qU[np.where(qU>1e-3)],yobsU[np.where(qU>1e-3)]					####
+		# ~ qU,yobsU=qU[qU>1e-3],yobsU[qU>1e-3]					####
 
 		qUkernel=pad(qU)
 		USAXSres=Slit1D(qUkernel,q_length=dIW,q_width=q_widthU,q_calc=qUkernel)
@@ -93,12 +93,12 @@ def fit(g):
 	mpl.rc('text.latex',preamble=r'\usepackage[helvet]{sfmath}')
 	plt.figure(figsize=(7.5/2.54,5.3/2.54))
 
-	plt.scatter(qS,yobsS,c='k',marker='.',s=2,linewidth=0)
+	plt.plot(qS,yobsS,'.',ms=1,color='k')
 	plt.plot(qSkernel[50:-50],SAXSres.apply(call_kernel(SAXSkernel,funcy.omit(prm,['Uscale','Ubackground'])))[50:-50],'0.3',linewidth=0.5)
 
 	if os.path.isfile(f.replace('_SAXS','_USAXS')):
 		prm['scale']=prm['Uscale'];prm['background']=prm['Ubackground']
-		plt.scatter(qU,yobsU,c='k',marker='.',s=2,linewidth=0)
+		plt.plot(qU,yobsU,'.',color='k')
 		plt.plot(qUkernel[50:-50],USAXSres.apply(call_kernel(USAXSkernel,funcy.omit(prm,['Uscale','Ubackground'])))[50:-50],'0.3',linewidth=0.5)
 
 	plt.xscale('log');plt.yscale('log')

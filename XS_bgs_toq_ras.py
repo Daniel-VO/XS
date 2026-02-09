@@ -1,5 +1,5 @@
 """
-Created 02. Mai 2025 by Daniel Van Opdenbosch, Technical University of Munich
+Created 03. Dezember 2025 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -18,7 +18,7 @@ def gaussian(x,a,x0,sigma):
 	return a*np.exp(-((x-x0)/sigma)**2/2)
 
 def gaussfit(q,y):
-	args=np.where(q<=-min(q))
+	args=q<=-min(q)
 	params,_=scipy.optimize.curve_fit(gaussian,q[args],y[args],p0=[max(y),0,1e-3])
 	return params
 
@@ -51,7 +51,7 @@ def subt(f,bgfiles):
 		else:
 			HWHM=0
 
-		argscut=np.where((q>=min(qbg))&(q<=max(qbg)))
+		argscut=(q>=min(qbg))&(q<=max(qbg))
 		q=q[argscut];yobs=yobs[argscut]											#cut
 		ybg=scipy.interpolate.interp1d(qbg,ybg)(q)
 		yobs-=ybg/gpb[0]*gpm[0];bgs='_bgs'										#bgcorr

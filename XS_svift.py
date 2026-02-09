@@ -1,5 +1,5 @@
 """
-Created 16. Mai 2025 by Daniel Van Opdenbosch, Technical University of Munich
+Created 03. Dezember 2025 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -37,9 +37,9 @@ for ran in ranges:
 		print(filename)
 		q,yobs=np.genfromtxt(f,unpack=True)
 
-		args=np.where((q>=ran[0])&(q<=ran[1]))									####
-		q,yobs=q[args],yobs[args]											####
-		q,yobs=q[np.argmax(yobs):],yobs[np.argmax(yobs):]					####
+		args=(q>=ran[0])&(q<=ran[1])											####
+		q,yobs=q[args],yobs[args]												####
+		q,yobs=q[np.argmax(yobs):],yobs[np.argmax(yobs):]						####
 
 		plt.close('all')
 
@@ -51,10 +51,10 @@ for ran in ranges:
 		r=np.arange(0.0,invertor.d_max,invertor.d_max/100)
 		pr=invertor.pr_err(out,cov,r)
 
-		for _ in np.arange(10):
+		for _ in range(10):
 			print(np.any(pr[0]<0),invertor.get_dmax())
 			if np.any(pr[0]<0):
-				invertor.set_dmax(1.2*r[np.where(pr[0]<0)][0])
+				invertor.set_dmax(1.2*r[pr[0]<0][0])
 			else:
 				invertor.set_dmax(1.2*invertor.get_dmax())
 

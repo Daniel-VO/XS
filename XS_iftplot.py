@@ -30,6 +30,6 @@ for r in ranges:
 			plt.plot(ifts[w].r,ifts[w].p,label=ifts[w].getParameter('filename').split('_bgs_toq_')[0]+': '+str(round(ifts[w].getParameter('rg'),2)))
 		plt.legend(fontsize=6,frameon=False)
 
-		plt.xlim([None,np.max([ift.r for ift in ifts])*1.02])
+		plt.xlim([None,np.max([np.max(ift.r) for ift in ifts])*1.02])
 		plt.tight_layout(pad=0)
 		plt.savefig(name+str(r)+'.png',dpi=300)
