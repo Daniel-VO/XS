@@ -1,5 +1,5 @@
 """
-Created 03. Dezember 2025 by Daniel Van Opdenbosch, Technical University of Munich
+Created 10. Februar 2026 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -11,8 +11,8 @@ import scipy
 import numpy as np
 import matplotlib.pyplot as plt
 
-def toq(tt):
-	return 4*np.pi*np.sin(np.radians(tt/2))/1.5406
+def toq(tt_deg):
+	return 4*np.pi*np.sin(np.radians(tt_deg/2))/1.5406
 
 def gaussian(x,a,x0,sigma):
 	return a*np.exp(-((x-x0)/sigma)**2/2)
@@ -25,8 +25,9 @@ def gaussfit(q,y):
 @ray.remote
 def subt(f,bgfiles):
 	filename=os.path.splitext(f)[0]
-	tt,yobs,eps=np.genfromtxt((i.replace('*','#') for i in open(f)),unpack=True)
-	q=toq(tt);bgs=''															#to q
+	tt_deg,yobs,eps=np.genfromtxt((i.replace('*','#') for i in open(f)),unpack=True)
+	yobs/=1+np.cos(np.radians(tt_deg))**2
+	q=toq(tt_deg);bgs=''														#to q
 
 	if len(bgfiles)==0:
 		print('Kein Untergrund')
@@ -40,8 +41,9 @@ def subt(f,bgfiles):
 			else:
 				bgfile=bgfiles[[i for i,l in enumerate(bgfiles) if bgstring not in l][0]]
 
-		ttbg,ybg,epsbg=np.genfromtxt((i.replace('*','#') for i in open(bgfile)),unpack=True)
-		qbg=toq(ttbg)															#to q
+		ttbg_deg,ybg,epsbg=np.genfromtxt((i.replace('*','#') for i in open(bgfile)),unpack=True)
+		ybg/=1+np.cos(np.radians(ttbg_deg))**2
+		qbg=toq(ttbg_deg)														#to q
 		if s=='*_USAXS' or s=='*_SAXS':
 			gpm=gaussfit(q,yobs);gpb=gaussfit(qbg,ybg)
 			q-=gpm[1];qbg-=gpb[1]												#zdc
