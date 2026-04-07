@@ -1,5 +1,5 @@
 """
-Created 03. Dezember 2025 by Daniel Van Opdenbosch, Technical University of Munich
+Created 27. Maerz 2026 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -19,13 +19,6 @@ def line_prepender(filename, line):
 		f.seek(0, 0)
 		f.write(line.rstrip('\r\n') + '\n' + content)
 
-f=10;s=10;lamb=1.5406;rGon=300;d1=173.5;d2=2*rGon-d1
-AHlen=(f/2+s/2)/d1*2*rGon
-LHlen=(f/2+s/2)/d1*d2
-a=4*np.pi*np.sin(np.arctan(AHlen/2/rGon))/lamb
-b=4*np.pi*np.sin(np.arctan(LHlen/2/rGon))/lamb
-dIW=4*np.pi*np.sin(np.arctan((AHlen-LHlen)/2/rGon))/lamb
-
 ranges=[
 		[7e-3,3e-1],
 		]
@@ -43,9 +36,10 @@ for ran in ranges:
 
 		plt.close('all')
 
+		slinf=eval(open(f).readlines()[0].split('#')[-1])
 		invertor=Invertor()
 		invertor.set_x(q);invertor.set_y(yobs);invertor.set_err(np.ones(len(q)))
-		invertor.set_slit_height(dIW);invertor.set_slit_width(float(open(f).readlines()[0].split('=')[-1]))
+		invertor.set_slit_height(slinf['dIW']);invertor.set_slit_width(slinf['bxw'])
 
 		out,cov=invertor.invert(nfunc=int(invertor.get_dmax()/12))
 		r=np.arange(0.0,invertor.d_max,invertor.d_max/100)
