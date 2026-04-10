@@ -15,7 +15,7 @@ import sasmodels as sm
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from sasmodels.core import load_model
-from sasmodels.resolution import Slit1D
+from sasmodels.resolution import Slit1D,Pinhole1D
 from sasmodels.direct_model import call_kernel
 
 def pad(q):
@@ -51,7 +51,10 @@ def fit(f):
 	q,yobs=q[q>7e-3],yobs[q>7e-3]												####
 
 	qpad=pad(q)
-	smear=Slit1D(qpad,q_length=slinf['dIW'],q_width=slinf['bxw'],q_calc=qpad)
+	if 'dIW' in slinf.keys():
+		smear=Slit1D(qpad,q_length=slinf['dIW'],q_width=slinf['bxw'],q_calc=qpad)
+	else:
+		smear=Pinhole1D(qpad,q_width=[slinf['bxw']],q_calc=qpad)
 	kernel=model.make_kernel([qpad])
 
 	def fitfunc(params):

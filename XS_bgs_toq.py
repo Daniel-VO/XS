@@ -62,7 +62,7 @@ def corr(f):
 	ybg=scipy.interpolate.interp1d(qbg,ybg)(q)
 	yobs-=ybg/gpb[0]*gpm[0]														#bgcorr
 
-	yobs/=(1+np.cos(2*np.radians(tt_deg[argscut]/2))**2)/2						#polcorr
+	yobs/=(1+np.cos(np.radians(tt_deg[argscut]))**2)/2							#polcorr
 
 	plt.close('all')
 	plt.plot(q,yobs)
@@ -72,7 +72,7 @@ def corr(f):
 
 	os.system('rm *_toq.dat')
 	with open(fn+'_bgs_toq.dat','a') as d:
-		print('#'+str({'a':a,'b':b,'bxw':bxw,'dIW':dIW}),file=d)
+		print('# '+str({'a':a,'b':b,'bxw':bxw,'dIW':dIW}),file=d)
 		np.savetxt(d,np.transpose([q,yobs]),fmt='%.8f')
 
 ray.get([corr.remote(f) for f in glob.glob('*.ras')])
