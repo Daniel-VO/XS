@@ -49,7 +49,8 @@ def corr(f):
 
 		tt_deg,yobs,eps=np.genfromtxt((i.replace('*','#') for i in open(f)),unpack=True)
 		global ttbg_deg,ybg
-		q,qbg=4*np.pi*np.sin(np.radians(np.array([tt_deg,ttbg_deg])/2))/lamb	#to q
+		q=4*np.pi*np.sin(np.radians(tt_deg/2))/lamb								#to q
+		qbg=4*np.pi*np.sin(np.radians(ttbg_deg/2))/lamb
 
 		if min(q)<0:
 			gpm=gaussfit(q,yobs);gpb=gaussfit(qbg,ybg)
