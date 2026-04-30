@@ -1,5 +1,5 @@
 """
-Created 27. Maerz 2026 by Daniel Van Opdenbosch, Technical University of Munich
+Created 30. Maerz 2026 by Daniel Van Opdenbosch, Technical University of Munich
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed without any warranty or implied warranty of merchantability or fitness for a particular purpose. See the GNU general public license for more details: <http://www.gnu.org/licenses/>
 """
@@ -49,21 +49,20 @@ def corr(f):
 
 		tt_deg,yobs,eps=np.genfromtxt((i.replace('*','#') for i in open(f)),unpack=True)
 		global ttbg_deg,ybg
-		q,qbg=4*np.pi*np.sin(np.radians(np.array([tt_deg,ttbg_deg])/2))/lamb		#to q
+		q,qbg=4*np.pi*np.sin(np.radians(np.array([tt_deg,ttbg_deg])/2))/lamb	#to q
 
 		if min(q)<0:
 			gpm=gaussfit(q,yobs);gpb=gaussfit(qbg,ybg)
-			q-=gpm[1];qbg-=gpb[1]													#zdc
-			bxw=(2*np.log(2))**0.5*abs(gpb[2])										#HWHM
+			q-=gpm[1];qbg-=gpb[1]												#zdc
+			bxw=(2*np.log(2))**0.5*abs(gpb[2])									#HWHM
 		else:
 			bxw=qbg[np.where(ybg<max(ybg)/2)[0][0]]
 
 		argscut=(q>=min(qbg))&(q<=max(qbg))
-		q=q[argscut];yobs=yobs[argscut]												#cut
-		ybg=scipy.interpolate.interp1d(qbg,ybg)(q)
-		yobs-=ybg/gpb[0]*gpm[0]														#bgcorr
+		q=q[argscut];yobs=yobs[argscut]											#cut
+		yobs-=scipy.interpolate.interp1d(qbg,ybg)(q)/gpb[0]*gpm[0]				#bgcorr
 
-		yobs/=(1+np.cos(np.radians(tt_deg[argscut]))**2)/2							#polcorr
+		yobs/=(1+np.cos(np.radians(tt_deg[argscut]))**2)/2						#polcorr
 
 		plt.close('all')
 		plt.plot(q,yobs)
