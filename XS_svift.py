@@ -39,11 +39,11 @@ for ran in ranges:
 		invertor.alpha=0														####
 		invertor.nfunc=20														####
 
-		invertor.x=q;invertor.y=yobs;invertor.err=np.ones(len(q))
+		invertor.set_x(q); invertor.set_y(yobs); invertor.set_err(np.ones(len(q)))
 		if 'dIW' in slinf.keys():
-			invertor.slit_height=slinf['dIW'];invertor.slit_width=slinf['bxw']
+			invertor.set_slit_height(slinf['dIW']); invertor.set_slit_width(slinf['bxw'])
 		else:
-			invertor.slit_height=slinf['bxw'];invertor.slit_width=slinf['bxw']
+			invertor.set_slit_height(slinf['bxw']); invertor.set_slit_width(slinf['bxw'])
 		out,cov=invertor.invert()
 		r=np.linspace(0,invertor.d_max,num=len(q))
 		pr=invertor.pr_err(out,cov,r)
