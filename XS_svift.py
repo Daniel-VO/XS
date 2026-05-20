@@ -44,7 +44,7 @@ for ran in ranges:
 			invertor.set_slit_height(slinf['dIW']); invertor.set_slit_width(slinf['bxw'])
 		else:
 			invertor.set_slit_height(slinf['bxw']); invertor.set_slit_width(slinf['bxw'])
-		out,cov=invertor.invert()
+		out,cov=invertor.invert(nfunc=invertor.nfunc)
 		r=np.linspace(0,invertor.d_max,num=len(q))
 		pr=invertor.pr_err(out,cov,r)
 
