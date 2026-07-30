@@ -9,7 +9,6 @@ the Free Software Foundation, either version 3 of the License, or
 """
 
 from pathlib import Path
-import glob
 import xml.etree.ElementTree as ET
 
 import fabio
@@ -48,14 +47,7 @@ def make_pxsml_string(img):
 
     wavelength_nm = wavelength_angstrom / 10
 
-    try:
-        sample_size = float(
-            img.header["OPTICS_INCIDENTS"]
-            .split("Collimator")[-1]
-            .split("mm")[0]
-        )
-    except Exception:
-        sample_size = 0.1
+    sample_size = 1.5
 
     root = ET.Element(
         "ProfexSynchrotronConfiguration",
